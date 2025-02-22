@@ -1,8 +1,11 @@
+use std::arch::is_aarch64_feature_detected;
+
 use raylib::prelude::*;
 
 // CONSTANTS
 const SCREEN_HEIGHT: i32 = 640;
 const SCREEN_WIDTH: i32 = 480;
+const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
 
 // GAMESTATES
 enum GameState {
@@ -29,6 +32,10 @@ fn main() {
     rl.set_window_min_size(240i32, 320i32);
     rl.set_target_fps(60u32);
 
+    let font: Font = rl
+        .load_font_from_memory(&thread, ".ttf", MAIN_FONT, 32i32, None)
+        .unwrap();
+
     // INIT CAMERA
     let mut cam = Camera3D::perspective(
         Vector3::new(0f32, 10f32, 10f32),
@@ -36,11 +43,14 @@ fn main() {
         Vector3::new(0f32, 1f32, 0f32),
         45f32,
     );
-    
+
     // INIT RENDER TARGET
     let mut render_target: RenderTexture2D = rl
         .load_render_texture(&thread, SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
         .unwrap();
+
+    // INIT GREETING SCREEN
+    let mut greet_screen: GreetScreen = GreetScreen::new();
 
     while !rl.window_should_close() {
         // PRE-UPDATE, GLOBAL KEYBOARD INPUT, ETC. | Probably will not be needed
@@ -51,7 +61,16 @@ fn main() {
             // include upd + draw to each state since they have different logic
             // and drawing tasks
             GameState::GreetingScreen => {
-                greet(&thread, &mut rl, delta_time, &mut game_state, &mut cam, &mut render_target);
+                manage_greet(
+                    &thread,
+                    &mut rl,
+                    &mut greet_screen,
+                    &delta_time,
+                    &font,
+                    &mut game_state,
+                    &mut cam,
+                    &mut render_target,
+                );
             }
             GameState::MainMenu => {
                 main_menu();
@@ -80,7 +99,7 @@ fn main() {
 fn draw_on_target(d: &mut RaylibDrawHandle, render_target: &RenderTexture2D) {
     // Screen scaling
     let mut scaling: f32 = 1f32;
-    
+
     let scale_x: f32;
     let scale_y: f32;
 
@@ -128,67 +147,105 @@ fn draw_on_target(d: &mut RaylibDrawHandle, render_target: &RenderTexture2D) {
     );
 }
 
-/// Drawing a centered text
-fn draw_text_center(
-    d: &mut RaylibTextureMode<RaylibDrawHandle>,
-    text: &str,
-    y: i32,
-    font_size: i32,
-    color: Color,
-) {
-    let text_length = d.measure_text(text, font_size);
-    d.draw_text(
-        text,
-        // SCREEN_WIDTH is a constant, so if screen is resizeable, it is better
-        // to use d.get_screen_width();
-        (SCREEN_WIDTH as i32 / 2i32) - (text_length / 2),
-        y,
-        font_size,
-        color,
-    );
+struct GreetScreen {
+    is_color_brightens: bool,
+    color: u8,
 }
 
+impl GreetScreen {
+    fn new() -> Self {
+        Self {
+            is_color_brightens: true,
+            color: 0u8,
+        }
+    }
 
-/// Handle Greeting Screen State
-/// When enter is pressed proceed to main menu and load saves
-fn greet(
-    thread: &RaylibThread,
-    rl: &mut RaylibHandle,
-    delta_time: f32,
-    game_state: &mut GameState,
-    cam: &mut Camera3D,
-    render_target: &mut RenderTexture2D
-) {
-    // Update
-    {
+    fn update(&mut self, rl: &mut RaylibHandle, cam: &mut Camera3D, game_state: &mut GameState) {
         // exammple update
         rl.update_camera(cam, CameraMode::CAMERA_ORBITAL);
         
-        if rl.is_key_pressed(KeyboardKey::KEY_ENTER){
+        if self.is_color_brightens {
+            self.color += 5u8;
+            if self.color == 255u8 {
+                self.is_color_brightens = false;
+            }
+        } else {
+            self.color -= 5u8;
+            if self.color == 0u8 {
+                self.is_color_brightens = true;
+            }
+        }
+
+        if rl.is_key_pressed(KeyboardKey::KEY_ENTER) {
             *game_state = GameState::MainMenu;
         }
     }
 
-    // DRAW OUT OF VIEWPORT
-    {
+    fn draw(
+        &self,
+        thread: &RaylibThread,
+        rl: &mut RaylibHandle,
+        font: &Font,
+        cam: &mut Camera3D,
+        render_target: &mut RenderTexture2D,
+    ) {
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
-        d.draw_text("WHOLE WINDOW", 12, 12, 20, Color::ORANGE);
+        //d.draw_text("WHOLE WINDOW", 12, 12, 20, Color::ORANGE);
+        d.draw_text_ex(
+            font,
+            "WHOLE WINDOW",
+            Vector2::new(12f32, 12f32),
+            22f32,
+            1f32,
+            Color::ORANGE,
+        );
 
         // DRAW IN VIEWPORT
         {
             let mut d = d.begin_texture_mode(&thread, render_target);
             d.clear_background(Color::WHITE);
-            d.draw_text("VIEWPORT", 12, 12, 20, Color::ORANGE);
+            d.draw_text_ex(
+                font,
+                "VIEWPORT",
+                Vector2::new(12f32, 12f32),
+                22f32,
+                1f32,
+                Color::ORANGE,
+            );
             // DRAW 3D BG
             {
                 let mut d = d.begin_mode3D(*cam);
                 d.draw_grid(16i32, 1f32);
             }
-            draw_text_center(&mut d, "Press Enter to start", 500i32, 32i32, Color::BLACK);
+            // Color::new(self.color, self.color, self.color, 255u8)
+            d.draw_text_ex(
+                font,
+                "Press Enter to start\n\n[DON'T DO IT NOW]",
+                Vector2::new(160f32, 500f32),
+                32f32,
+                1f32,
+                Color::new(self.color, self.color, self.color, 255u8),
+            );
         }
         draw_on_target(&mut d, &render_target);
     }
+}
+
+/// Handle Greeting Screen State
+/// When enter is pressed proceed to main menu and load saves
+fn manage_greet(
+    thread: &RaylibThread,
+    rl: &mut RaylibHandle,
+    greet_screen: &mut GreetScreen,
+    delta_time: &f32,
+    font: &Font,
+    game_state: &mut GameState,
+    cam: &mut Camera3D,
+    render_target: &mut RenderTexture2D,
+) {
+    greet_screen.update(rl, cam, game_state);
+    greet_screen.draw(thread, rl, font, cam, render_target);
 }
 
 /// Handle Main Menu State
@@ -208,3 +265,25 @@ fn game_over() {}
 
 /// Handle End Screen State
 fn end_screen() {}
+
+// // DRAW OUT OF VIEWPORT
+// {
+//     let mut d = rl.begin_drawing(&thread);
+//     d.clear_background(Color::BLACK);
+//     //d.draw_text("WHOLE WINDOW", 12, 12, 20, Color::ORANGE);
+//     d.draw_text_ex(font, "WHOLE WINDOW", Vector2::new(12f32, 12f32), 22f32, 1f32, Color::ORANGE);
+
+//     // DRAW IN VIEWPORT
+//     {
+//         let mut d = d.begin_texture_mode(&thread, render_target);
+//         d.clear_background(Color::WHITE);
+//         d.draw_text_ex(font, "VIEWPORT", Vector2::new(12f32, 12f32), 22f32, 1f32, Color::ORANGE);
+//         // DRAW 3D BG
+//         {
+//             let mut d = d.begin_mode3D(*cam);
+//             d.draw_grid(16i32, 1f32);
+//         }
+//         d.draw_text_ex(font, "Press Enter to start", Vector2::new(160f32, 500f32), 32f32, 1f32, Color::BLACK);
+//     }
+//     draw_on_target(&mut d, &render_target);
+// }
