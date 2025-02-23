@@ -23,7 +23,7 @@ fn main() {
     rl.set_target_fps(MAX_FPS);
 
     let font: Font = rl
-        .load_font_from_memory(&thread, ".ttf", MAIN_FONT, 32i32, None)
+        .load_font_from_memory(&thread, ".ttf", MAIN_FONT, 64i32, None)
         .unwrap();
 
     // INIT CAMERA
@@ -41,7 +41,7 @@ fn main() {
 
     // INIT GREETING SCREEN
     let mut greet_screen: GreetScreen = GreetScreen::new();
-    
+
     // INIT MAIN MENU
     let mut main_menu: MainMenu = MainMenu::new();
 
@@ -66,7 +66,16 @@ fn main() {
                 );
             }
             GameState::MainMenu => {
-                manage_main_menu(&thread, &mut rl, &mut main_menu, &delta_time, &font, &mut game_state, &mut cam, &mut render_target);
+                manage_main_menu(
+                    &thread,
+                    &mut rl,
+                    &mut main_menu,
+                    &delta_time,
+                    &font,
+                    &mut game_state,
+                    &mut cam,
+                    &mut render_target,
+                );
             }
             GameState::Playing => {
                 playing();

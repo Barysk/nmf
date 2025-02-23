@@ -8,12 +8,12 @@ pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
 
 // GAMESTATES
 pub enum GameState {
-    GreetingScreen,   // Press enter
-    MainMenu,         // Menu start quit settings, etc
-    Playing,          // GameLoop goes
-        Pause,            // Gameloop poused
-        GameOver,         // Player lost all lifes
-        EndScreen,        // Player won and titles are shown
+    GreetingScreen, // Press enter
+    MainMenu,       // Menu start quit settings, etc
+    Playing,        // GameLoop goes
+    Pause,          // Gameloop poused
+    GameOver,       // Player lost all lifes
+    EndScreen,      // Player won and titles are shown
 }
 
 /// DRAW TEXTURE TARGET

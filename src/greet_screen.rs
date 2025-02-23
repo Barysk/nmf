@@ -1,9 +1,8 @@
-use raylib::prelude::*;
 use crate::global::*;
+use raylib::prelude::*;
 pub struct GreetScreen {
     timer_loading: f32,
     is_loaded: bool,
-
 }
 
 impl GreetScreen {
@@ -14,7 +13,13 @@ impl GreetScreen {
         }
     }
 
-    pub fn update(&mut self, rl: &mut RaylibHandle, delta_time: &f32, cam: &mut Camera3D, game_state: &mut GameState) {
+    pub fn update(
+        &mut self,
+        rl: &mut RaylibHandle,
+        delta_time: &f32,
+        _cam: &mut Camera3D,
+        game_state: &mut GameState,
+    ) {
         // MIN WAIT TIME
         const WAIT_TIME: f32 = 1f32;
 
@@ -23,8 +28,8 @@ impl GreetScreen {
         } else if self.timer_loading >= WAIT_TIME && !self.is_loaded {
             self.is_loaded = true;
         }
-        
-        if rl.is_key_pressed(KeyboardKey::KEY_ENTER) && self.is_loaded{
+
+        if rl.is_key_pressed(KeyboardKey::KEY_ENTER) && self.is_loaded {
             *game_state = GameState::MainMenu;
         }
     }
@@ -66,7 +71,7 @@ impl GreetScreen {
                 let mut d = d.begin_mode3D(*cam);
                 d.draw_grid(16i32, 1f32);
             }
-            if self.is_loaded{
+            if self.is_loaded {
                 const TEXT_POSITION: Vector2 = Vector2::new(140f32, 500f32);
                 d.draw_text_ex(
                     font,
