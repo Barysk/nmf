@@ -3,22 +3,22 @@ use raylib::prelude::*;
 // CONSTANTS
 
 pub const MAX_FPS: u32 = 60;
-pub const SCREEN_HEIGHT: i32 = 640;
-pub const SCREEN_WIDTH: i32 = 480;
+pub const SCREEN_HEIGHT: i32 = 960;
+pub const SCREEN_WIDTH: i32 = 720;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
 
 // INPUT KEYS
 pub const UP: KeyboardKey = KeyboardKey::KEY_UP;
 pub const DOWN: KeyboardKey = KeyboardKey::KEY_DOWN;
-pub const LEFT: KeyboardKey = KeyboardKey::KEY_LEFT;
-pub const RIGHT: KeyboardKey = KeyboardKey::KEY_RIGHT;
+pub const _LEFT: KeyboardKey = KeyboardKey::KEY_LEFT;
+pub const _RIGHT: KeyboardKey = KeyboardKey::KEY_RIGHT;
 
 pub const ATACK: KeyboardKey = KeyboardKey::KEY_Z;
-pub const BOMB: KeyboardKey = KeyboardKey::KEY_X;
-pub const SLOW: KeyboardKey = KeyboardKey::KEY_LEFT_SHIFT;
+pub const _BOMB: KeyboardKey = KeyboardKey::KEY_X;
+pub const _SLOW: KeyboardKey = KeyboardKey::KEY_LEFT_SHIFT;
 
 pub const ACCEPT: KeyboardKey = KeyboardKey::KEY_ENTER;
-pub const REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
+pub const _REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
 
 // GAMESTATES
 pub enum GameState {
@@ -32,17 +32,17 @@ pub enum GameState {
 
 // GLOBAL DATA
 pub struct GameData {
-    window_should_close: bool
+    window_should_close: bool,
 }
 
 impl GameData {
     pub fn new() -> Self {
         Self {
-            window_should_close: false,            
+            window_should_close: false,
         }
     }
-    
-    pub fn window_must_close(&mut self){
+
+    pub fn window_must_close(&mut self) {
         self.window_should_close = true;
     }
 
@@ -57,17 +57,14 @@ pub fn draw_on_target(d: &mut RaylibDrawHandle, render_target: &RenderTexture2D)
     // Screen scaling
     let mut scaling: f32 = 1f32;
 
-    let scale_x: f32;
-    let scale_y: f32;
-
-    scale_x = d.get_screen_width() as f32 / SCREEN_WIDTH as f32;
-    scale_y = d.get_screen_height() as f32 / SCREEN_HEIGHT as f32;
+    let scale_x: f32 = d.get_screen_width() as f32 / SCREEN_WIDTH as f32;
+    let scale_y: f32 = d.get_screen_height() as f32 / SCREEN_HEIGHT as f32;
 
     if scale_x != scaling && scale_y != scaling {
         if scale_x >= scale_y {
-            scaling = scale_y as f32;
+            scaling = scale_y;
         } else {
-            scaling = scale_x as f32;
+            scaling = scale_x;
         }
     }
 
@@ -77,8 +74,8 @@ pub fn draw_on_target(d: &mut RaylibDrawHandle, render_target: &RenderTexture2D)
     );
 
     let render_target_position: Vector2 = Vector2::new(
-        screen_center.x - (render_target.texture.width as f32 * scaling) as f32 / 2f32,
-        screen_center.y - (render_target.texture.height as f32 * scaling) as f32 / 2f32,
+        screen_center.x - render_target.texture.width as f32 * scaling / 2f32,
+        screen_center.y - render_target.texture.height as f32 * scaling / 2f32,
     );
 
     d.draw_texture_pro(

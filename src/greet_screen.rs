@@ -21,7 +21,7 @@ impl GreetScreen {
         game_state: &mut GameState,
     ) {
         // MIN WAIT TIME
-        const WAIT_TIME: f32 = 1f32;
+        const WAIT_TIME: f32 = 0.5f32;
 
         if self.timer_loading < WAIT_TIME && !self.is_loaded {
             self.timer_loading += delta_time;
@@ -42,7 +42,7 @@ impl GreetScreen {
         cam: &mut Camera3D,
         render_target: &mut RenderTexture2D,
     ) {
-        let mut d = rl.begin_drawing(&thread);
+        let mut d = rl.begin_drawing(thread);
         d.clear_background(Color::BLACK);
         //d.draw_text("WHOLE WINDOW", 12, 12, 20, Color::ORANGE);
         d.draw_text_ex(
@@ -56,8 +56,9 @@ impl GreetScreen {
 
         // DRAW IN VIEWPORT
         {
-            let mut d = d.begin_texture_mode(&thread, render_target);
+            let mut d = d.begin_texture_mode(thread, render_target);
             d.clear_background(Color::DARKGRAY);
+            // Example Text
             d.draw_text_ex(
                 font,
                 "VIEWPORT",
@@ -72,12 +73,13 @@ impl GreetScreen {
                 d.draw_grid(16i32, 1f32);
             }
             if self.is_loaded {
-                const TEXT_POSITION: Vector2 = Vector2::new(140f32, 500f32);
+                const TEXT_POSITION: Vector2 = Vector2::new(140f32, SCREEN_HEIGHT as f32 - 100f32);
+                const TEXT_SIZE: f32 = 72f32;
                 d.draw_text_ex(
                     font,
                     "Press Enter to start",
                     TEXT_POSITION + 2f32,
-                    32f32,
+                    TEXT_SIZE,
                     1f32,
                     Color::BLACK,
                 );
@@ -85,12 +87,12 @@ impl GreetScreen {
                     font,
                     "Press Enter to start",
                     TEXT_POSITION,
-                    32f32,
+                    TEXT_SIZE,
                     1f32,
                     Color::DARKMAGENTA,
                 );
             }
         }
-        draw_on_target(&mut d, &render_target);
+        draw_on_target(&mut d, render_target);
     }
 }

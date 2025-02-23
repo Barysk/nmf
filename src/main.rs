@@ -26,7 +26,7 @@ fn main() {
     rl.set_target_fps(MAX_FPS);
 
     let font: Font = rl
-        .load_font_from_memory(&thread, ".ttf", MAIN_FONT, 64i32, None)
+        .load_font_from_memory(&thread, ".ttf", MAIN_FONT, 72i32, None)
         .unwrap();
 
     // INIT CAMERA
@@ -100,6 +100,7 @@ fn main() {
 /// Handle Greeting Screen State
 /// When enter is pressed proceed to main menu and load saves
 /// TODO: Remake into loading screen
+/// FIXME: Too many arguments
 fn manage_greet(
     thread: &RaylibThread,
     rl: &mut RaylibHandle,
@@ -114,7 +115,38 @@ fn manage_greet(
     greet_screen.draw(thread, rl, font, cam, render_target);
 }
 
-/// Handle Main Menu State
+/// Handle Main Menu State.
+/// FIXME: Too many arguments, consider refactoring:
+/// ```norun
+/// struct MainMenuContext<'a> {
+///     thread: &'a RaylibThread,
+///     rl: &'a mut RaylibHandle,
+///     gd: &'a mut GameData,
+///     assets: &'a mut AssetManager,
+///     sound_manager: &'a mut SoundManager,
+///     player: &'a mut Player,
+///     camera: &'a mut Camera2D,
+///     render_target: &'a mut RenderTexture2D,
+/// }
+///
+/// fn manage_main_menu(context: &mut MainMenuContext) {
+///     let rl = &mut context.rl;
+///     let gd = &mut context.gd;
+///     // Use other fields similarly
+/// }
+///
+/// let mut context = MainMenuContext {
+///     thread,
+///     rl,
+///     gd,
+///     assets,
+///     sound_manager,
+///     player,
+///     camera,
+///     render_target,
+/// };
+/// manage_main_menu(&mut context);
+/// ```
 fn manage_main_menu(
     thread: &RaylibThread,
     rl: &mut RaylibHandle,
@@ -131,7 +163,7 @@ fn manage_main_menu(
 }
 
 /// Handle Choose Difficulty State
-fn choose_difficulty() {}
+fn _choose_difficulty() {}
 
 /// Handle GamePlay State
 fn playing() {}
