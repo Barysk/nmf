@@ -1,10 +1,24 @@
 use raylib::prelude::*;
 
 // CONSTANTS
+
 pub const MAX_FPS: u32 = 60;
 pub const SCREEN_HEIGHT: i32 = 640;
 pub const SCREEN_WIDTH: i32 = 480;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
+
+// INPUT KEYS
+pub const UP: KeyboardKey = KeyboardKey::KEY_UP;
+pub const DOWN: KeyboardKey = KeyboardKey::KEY_DOWN;
+pub const LEFT: KeyboardKey = KeyboardKey::KEY_LEFT;
+pub const RIGHT: KeyboardKey = KeyboardKey::KEY_RIGHT;
+
+pub const ATACK: KeyboardKey = KeyboardKey::KEY_Z;
+pub const BOMB: KeyboardKey = KeyboardKey::KEY_X;
+pub const SLOW: KeyboardKey = KeyboardKey::KEY_LEFT_SHIFT;
+
+pub const ACCEPT: KeyboardKey = KeyboardKey::KEY_ENTER;
+pub const REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
 
 // GAMESTATES
 pub enum GameState {
@@ -14,6 +28,27 @@ pub enum GameState {
     Pause,          // Gameloop poused
     GameOver,       // Player lost all lifes
     EndScreen,      // Player won and titles are shown
+}
+
+// GLOBAL DATA
+pub struct GameData {
+    window_should_close: bool
+}
+
+impl GameData {
+    pub fn new() -> Self {
+        Self {
+            window_should_close: false,            
+        }
+    }
+    
+    pub fn window_must_close(&mut self){
+        self.window_should_close = true;
+    }
+
+    pub fn window_should_close(&self) -> bool {
+        self.window_should_close
+    }
 }
 
 /// DRAW TEXTURE TARGET

@@ -19,6 +19,9 @@ fn main() {
         .title("Noster: Mare Frigoris")
         .build();
 
+    // INIT GAME DATA
+    let mut gd: GameData = GameData::new();
+
     rl.set_window_min_size(240i32, 320i32);
     rl.set_target_fps(MAX_FPS);
 
@@ -45,7 +48,7 @@ fn main() {
     // INIT MAIN MENU
     let mut main_menu: MainMenu = MainMenu::new();
 
-    while !rl.window_should_close() {
+    while !rl.window_should_close() && !gd.window_should_close() {
         // PRE-UPDATE, GLOBAL KEYBOARD INPUT, ETC. | Probably will not be needed
         let delta_time: f32 = rl.get_frame_time();
 
@@ -69,6 +72,7 @@ fn main() {
                 manage_main_menu(
                     &thread,
                     &mut rl,
+                    &mut gd,
                     &mut main_menu,
                     &delta_time,
                     &font,
@@ -114,6 +118,7 @@ fn manage_greet(
 fn manage_main_menu(
     thread: &RaylibThread,
     rl: &mut RaylibHandle,
+    gd: &mut GameData,
     main_menu: &mut MainMenu,
     delta_time: &f32,
     font: &Font,
@@ -121,7 +126,7 @@ fn manage_main_menu(
     cam: &mut Camera3D,
     render_target: &mut RenderTexture2D,
 ) {
-    main_menu.update(rl, delta_time, cam, game_state);
+    main_menu.update(rl, gd, delta_time, cam, game_state);
     main_menu.draw(thread, rl, font, cam, render_target);
 }
 
