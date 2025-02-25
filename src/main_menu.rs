@@ -4,13 +4,21 @@ use crate::global::*;
 
 pub struct MainMenu {
     menu_state: MenuState,
-    // Idle things
+    // Main menu things
+    main_menu_activity: MenuActivity,
     activity_direction_right: bool,
     text_pos_x: f32,
     text_pos_x_mod: f32,
     timer_activity: f32,
-    // Navigating Menu
     chosen_index: u8,
+    // Option things
+    option_activity: MenuActivity,
+}
+
+enum MenuActivity {
+    Show,
+    Idle,
+    Hide,
 }
 
 enum MenuState {
@@ -27,17 +35,20 @@ impl MainMenu {
     const ACTIVITY_TIME_MIN: f32 = 3f32;
     const ACTIVITY_TIME_MAX: f32 = 5f32;
     const TARGET_TEXT_POS: f32 = 72f32;
+    const INITIAL_TEXT_POS: f32 = -384f32;
 
     pub fn new() -> Self {
         Self {
             menu_state: MenuState::Idle,
             // Idle
+            main_menu_activity: MenuActivity::Show,
             activity_direction_right: false,
-            text_pos_x: -256f32,
+            chosen_index: 0u8,
+            text_pos_x: Self::INITIAL_TEXT_POS,
             text_pos_x_mod: 32f32,
             timer_activity: Self::ACTIVITY_TIME_MIN,
-            // Navigation
-            chosen_index: 0u8,
+            // Option
+            option_activity: MenuActivity::Hide,
         }
     }
 
@@ -60,7 +71,9 @@ impl MainMenu {
             MenuState::StartExtra => {}
             MenuState::StartPractice => {}
             MenuState::Score => {}
-            MenuState::Option => {}
+            MenuState::Option => {
+                self.handle_option_update(rl, delta_time);
+            }
             MenuState::Quit => {
                 gd.window_must_close();
             }
@@ -109,167 +122,378 @@ impl MainMenu {
 
             // Drawing menu
             {
-                // TODO: Intoduce states match here later
-                {
-                    const FONT_SIZE: f32 = 72f32;
-                    const TEXT_GAP: f32 = 64f32;
-                    const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
-                    const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
+                match self.menu_state {
+                    MenuState::Idle => {
+                        const FONT_SIZE: f32 = 84f32;
+                        const TEXT_GAP: f32 = 72f32;
+                        const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
+                        const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
 
-                    d.draw_text_ex(
-                        font,
-                        "Start",
-                        Vector2::new(
-                            self.text_pos_x - self.text_pos_x_mod * 0.2f32 + 5f32,
-                            TEXT_POSITION as f32 - TEXT_GAP * 6f32,
-                        ),
-                        FONT_SIZE,
-                        1f32,
-                        if self.chosen_index == 0 {
-                            Color::WHITE
-                        } else {
-                            INACTIVE_WHITE
-                        },
-                    );
-                    d.draw_text_ex(
-                        font,
-                        "Start Extra",
-                        Vector2::new(
-                            self.text_pos_x - self.text_pos_x_mod * 1.2f32,
-                            TEXT_POSITION as f32 - TEXT_GAP * 5f32,
-                        ),
-                        FONT_SIZE,
-                        1f32,
-                        if self.chosen_index == 1 {
-                            Color::WHITE
-                        } else {
-                            INACTIVE_WHITE
-                        },
-                    );
-                    d.draw_text_ex(
-                        font,
-                        "Start Practice",
-                        Vector2::new(
-                            self.text_pos_x + self.text_pos_x_mod * 0.3f32,
-                            TEXT_POSITION as f32 - TEXT_GAP * 4f32,
-                        ),
-                        FONT_SIZE,
-                        1f32,
-                        if self.chosen_index == 2 {
-                            Color::WHITE
-                        } else {
-                            INACTIVE_WHITE
-                        },
-                    );
-                    d.draw_text_ex(
-                        font,
-                        "Score",
-                        Vector2::new(
-                            self.text_pos_x - self.text_pos_x_mod * 0.4f32,
-                            TEXT_POSITION as f32 - TEXT_GAP * 3f32,
-                        ),
-                        FONT_SIZE,
-                        1f32,
-                        if self.chosen_index == 3 {
-                            Color::WHITE
-                        } else {
-                            INACTIVE_WHITE
-                        },
-                    );
-                    d.draw_text_ex(
-                        font,
-                        "Option",
-                        Vector2::new(
-                            self.text_pos_x + self.text_pos_x_mod * 1.2f32,
-                            TEXT_POSITION as f32 - TEXT_GAP * 2f32,
-                        ),
-                        FONT_SIZE,
-                        1f32,
-                        if self.chosen_index == 4 {
-                            Color::WHITE
-                        } else {
-                            INACTIVE_WHITE
-                        },
-                    );
-                    d.draw_text_ex(
-                        font,
-                        "Quit",
-                        Vector2::new(self.text_pos_x + 20f32, TEXT_POSITION as f32 - TEXT_GAP),
-                        FONT_SIZE,
-                        1f32,
-                        if self.chosen_index == 5 {
-                            Color::WHITE
-                        } else {
-                            INACTIVE_WHITE
-                        },
-                    );
+                        d.draw_text_ex(
+                            font,
+                            "Start",
+                            Vector2::new(
+                                self.text_pos_x - self.text_pos_x_mod * 0.2f32 + 5f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 0 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Start Extra",
+                            Vector2::new(
+                                self.text_pos_x - self.text_pos_x_mod * 1.2f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 5f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 1 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Start Practice",
+                            Vector2::new(
+                                self.text_pos_x + self.text_pos_x_mod * 0.3f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 4f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 2 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Score",
+                            Vector2::new(
+                                self.text_pos_x - self.text_pos_x_mod * 0.4f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 3f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 3 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Option",
+                            Vector2::new(
+                                self.text_pos_x + self.text_pos_x_mod * 1.2f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 2f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 4 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Quit",
+                            Vector2::new(self.text_pos_x + 20f32, TEXT_POSITION as f32 - TEXT_GAP),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 5 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                    }
+                    MenuState::Start => {}
+                    MenuState::StartExtra => {}
+                    MenuState::StartPractice => {}
+                    MenuState::Score => {}
+                    MenuState::Option => {
+                        const FONT_SIZE: f32 = 84f32;
+                        const TEXT_GAP: f32 = 72f32;
+                        const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
+                        const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
+
+                        d.draw_text_ex(
+                            font,
+                            "Health",
+                            Vector2::new(
+                                self.text_pos_x - 40f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 7f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 0 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Bombs",
+                            Vector2::new(
+                                self.text_pos_x - 40f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 1 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Sound",
+                            Vector2::new(
+                                self.text_pos_x - 40f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 5f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 2 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Mode",
+                            Vector2::new(
+                                self.text_pos_x - 40f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 4f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 3 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Configure Keys",
+                            Vector2::new(
+                                self.text_pos_x - 40f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 3f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 4 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Reset",
+                            Vector2::new(
+                                self.text_pos_x - 40f32,
+                                TEXT_POSITION as f32 - TEXT_GAP * 2f32,
+                            ),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 5 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                        d.draw_text_ex(
+                            font,
+                            "Back",
+                            Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION as f32 - TEXT_GAP),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 6 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                    }
+                    MenuState::Quit => {
+                        // Essentially nothing
+                    }
                 }
             }
         }
         draw_on_target(&mut d, render_target);
     }
 
+    // MAIN
     fn handle_idle_update(&mut self, rl: &RaylibHandle, delta_time: &f32) {
-        // Handle text non-stillness
-        {
-            const MAX_POS_MOD: f32 = 32f32;
-            const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
-            const TEXT_MOVING_SPEED: f32 = 128f32;
+        match self.main_menu_activity {
+            MenuActivity::Show => {
+                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
 
-            if self.text_pos_x < Self::TARGET_TEXT_POS {
-                self.text_pos_x += TEXT_MOVING_SPEED_INIT * delta_time
-            } else if self.timer_activity > 0f32 {
-                self.timer_activity -= delta_time;
-            } else if self.activity_direction_right {
-                self.text_pos_x_mod += TEXT_MOVING_SPEED * delta_time;
-                if self.text_pos_x_mod >= MAX_POS_MOD {
-                    self.activity_direction_right = false;
-                    self.timer_activity =
-                        rand::random_range(Self::ACTIVITY_TIME_MIN..Self::ACTIVITY_TIME_MAX);
+                if self.text_pos_x < Self::TARGET_TEXT_POS {
+                    self.text_pos_x += TEXT_MOVING_SPEED_INIT * delta_time;
+                } else {
+                    self.main_menu_activity = MenuActivity::Idle;
                 }
-            } else if !self.activity_direction_right {
-                self.text_pos_x_mod -= TEXT_MOVING_SPEED * delta_time;
-                if self.text_pos_x_mod <= -MAX_POS_MOD {
-                    self.activity_direction_right = true;
-                    self.timer_activity =
-                        rand::random_range(Self::ACTIVITY_TIME_MIN..Self::ACTIVITY_TIME_MAX);
+            }
+            MenuActivity::Idle => {
+                const MAX_POS_MOD: f32 = 32f32;
+                const TEXT_MOVING_SPEED: f32 = 128f32;
+
+                // Handle Idle movement
+                {
+                    if self.timer_activity > 0f32 {
+                        self.timer_activity -= delta_time;
+                    } else if self.activity_direction_right {
+                        self.text_pos_x_mod += TEXT_MOVING_SPEED * delta_time;
+                        if self.text_pos_x_mod >= MAX_POS_MOD {
+                            self.activity_direction_right = false;
+                            self.timer_activity = rand::random_range(
+                                Self::ACTIVITY_TIME_MIN..Self::ACTIVITY_TIME_MAX,
+                            );
+                        }
+                    } else if !self.activity_direction_right {
+                        self.text_pos_x_mod -= TEXT_MOVING_SPEED * delta_time;
+                        if self.text_pos_x_mod <= -MAX_POS_MOD {
+                            self.activity_direction_right = true;
+                            self.timer_activity = rand::random_range(
+                                Self::ACTIVITY_TIME_MIN..Self::ACTIVITY_TIME_MAX,
+                            );
+                        }
+                    }
+                }
+
+                // HANDLE INPUT
+                {
+                    if rl.is_key_pressed(DOWN) {
+                        if self.chosen_index == 5u8 {
+                            self.chosen_index = 0u8;
+                        } else {
+                            self.chosen_index += 1;
+                        }
+                    }
+                    if rl.is_key_pressed(UP) {
+                        if self.chosen_index == 0u8 {
+                            self.chosen_index = 5u8;
+                        } else {
+                            self.chosen_index -= 1;
+                        }
+                    }
+                }
+
+                // HANDLE CHOISE
+                {
+                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(ATACK) {
+                        match self.chosen_index {
+                            0 => {}
+                            1 => {}
+                            2 => {}
+                            3 => {}
+                            4 => {
+                                //TODO: next_menu_state MUST be introduced
+                                self.main_menu_activity = MenuActivity::Hide;
+                            }
+                            5 => {
+                                self.menu_state = MenuState::Quit;
+                            }
+                            _ => self.chosen_index = 0,
+                        }
+                    }
+                }
+            }
+            MenuActivity::Hide => {
+                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
+
+                if self.text_pos_x > Self::INITIAL_TEXT_POS {
+                    self.text_pos_x -= TEXT_MOVING_SPEED_INIT * delta_time;
+                } else {
+                    self.chosen_index = 0;
+                    self.option_activity = MenuActivity::Show;
+                    self.menu_state = MenuState::Option;
                 }
             }
         }
+    }
 
-        // HANDLE INPUT
-        {
-            if rl.is_key_pressed(DOWN) {
-                if self.chosen_index == 5u8 {
-                    self.chosen_index = 0u8;
+    // OPTION
+    fn handle_option_update(&mut self, rl: &RaylibHandle, delta_time: &f32) {
+        let next_menu_state: MenuState;
+        match self.option_activity {
+            MenuActivity::Show => {
+                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
+
+                if self.text_pos_x < Self::TARGET_TEXT_POS {
+                    self.text_pos_x += TEXT_MOVING_SPEED_INIT * delta_time;
                 } else {
-                    self.chosen_index += 1;
+                    self.option_activity = MenuActivity::Idle;
                 }
             }
-            if rl.is_key_pressed(UP) {
-                if self.chosen_index == 0u8 {
-                    self.chosen_index = 5u8;
-                } else {
-                    self.chosen_index -= 1;
+            MenuActivity::Idle => {
+                // HANDLE INPUT
+                {
+                    if rl.is_key_pressed(DOWN) {
+                        if self.chosen_index == 6u8 {
+                            self.chosen_index = 0u8;
+                        } else {
+                            self.chosen_index += 1;
+                        }
+                    }
+                    if rl.is_key_pressed(UP) {
+                        if self.chosen_index == 0u8 {
+                            self.chosen_index = 6u8;
+                        } else {
+                            self.chosen_index -= 1;
+                        }
+                    }
+                }
+
+                // HANDLE CHOISE
+                {
+                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(ATACK) {
+                        match self.chosen_index {
+                            0 => {}
+                            1 => {}
+                            2 => {}
+                            3 => {}
+                            4 => {
+                                // TODO: Ask which button for which action.
+                            }
+                            5 => {
+                                //RESET
+                            }
+                            6 => {
+                                // Consider adding a next state variable if more tree menus will be done
+                                self.option_activity = MenuActivity::Hide;
+                            }
+                            _ => self.chosen_index = 0,
+                        }
+                    }
                 }
             }
-        }
+            MenuActivity::Hide => {
+                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
 
-        // HANDLE CHOISE
-        {
-            if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(ATACK) {
-                match self.chosen_index {
-                    0 => {}
-                    1 => {}
-                    2 => {}
-                    3 => {}
-                    4 => {
-                        //This is option, If it some choice made, I need hide the text back to left
-                    }
-                    5 => {
-                        self.menu_state = MenuState::Quit;
-                    }
-                    _ => self.chosen_index = 0,
+                if self.text_pos_x > Self::INITIAL_TEXT_POS {
+                    self.text_pos_x -= TEXT_MOVING_SPEED_INIT * delta_time;
+                } else {
+                    self.chosen_index = 4;
+                    self.main_menu_activity = MenuActivity::Show;
+                    self.menu_state = MenuState::Idle;
                 }
             }
         }

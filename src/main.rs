@@ -25,8 +25,9 @@ fn main() {
     rl.set_window_min_size(240i32, 320i32);
     rl.set_target_fps(MAX_FPS);
 
+    // LOAD FONT FROM MEMORY
     let font: Font = rl
-        .load_font_from_memory(&thread, ".ttf", MAIN_FONT, 72i32, None)
+        .load_font_from_memory(&thread, ".ttf", MAIN_FONT, 84i32, None)
         .unwrap();
 
     // INIT CAMERA

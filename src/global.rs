@@ -8,17 +8,18 @@ pub const SCREEN_WIDTH: i32 = 720;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
 
 // INPUT KEYS
+pub const ACCEPT: KeyboardKey = KeyboardKey::KEY_ENTER;
+pub const _REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
+
+// FIXME: are not constants that will be changed by a player, move to GLOBAL_DATA
 pub const UP: KeyboardKey = KeyboardKey::KEY_UP;
 pub const DOWN: KeyboardKey = KeyboardKey::KEY_DOWN;
 pub const _LEFT: KeyboardKey = KeyboardKey::KEY_LEFT;
 pub const _RIGHT: KeyboardKey = KeyboardKey::KEY_RIGHT;
-
 pub const ATACK: KeyboardKey = KeyboardKey::KEY_Z;
 pub const _BOMB: KeyboardKey = KeyboardKey::KEY_X;
 pub const _SLOW: KeyboardKey = KeyboardKey::KEY_LEFT_SHIFT;
 
-pub const ACCEPT: KeyboardKey = KeyboardKey::KEY_ENTER;
-pub const _REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
 
 // GAMESTATES
 pub enum GameState {
