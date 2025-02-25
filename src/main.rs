@@ -85,9 +85,6 @@ fn main() {
             GameState::Playing => {
                 playing();
             }
-            GameState::Pause => {
-                pause();
-            }
             GameState::GameOver => {
                 game_over();
             }
@@ -168,9 +165,6 @@ fn _choose_difficulty() {}
 
 /// Handle GamePlay State
 fn playing() {}
-
-/// Handle Pause State
-fn pause() {}
 
 /// Handle Game Over State
 fn game_over() {}

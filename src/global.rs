@@ -1,7 +1,6 @@
 use raylib::prelude::*;
 
 // CONSTANTS
-
 pub const MAX_FPS: u32 = 60;
 pub const SCREEN_HEIGHT: i32 = 960;
 pub const SCREEN_WIDTH: i32 = 720;
@@ -9,46 +8,84 @@ pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
 
 // INPUT KEYS
 pub const ACCEPT: KeyboardKey = KeyboardKey::KEY_ENTER;
-pub const _REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
-
-// FIXME: are not constants that will be changed by a player, move to GLOBAL_DATA
-pub const UP: KeyboardKey = KeyboardKey::KEY_UP;
-pub const DOWN: KeyboardKey = KeyboardKey::KEY_DOWN;
-pub const _LEFT: KeyboardKey = KeyboardKey::KEY_LEFT;
-pub const _RIGHT: KeyboardKey = KeyboardKey::KEY_RIGHT;
-pub const ATACK: KeyboardKey = KeyboardKey::KEY_Z;
-pub const _BOMB: KeyboardKey = KeyboardKey::KEY_X;
-pub const _SLOW: KeyboardKey = KeyboardKey::KEY_LEFT_SHIFT;
-
+pub const REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
 
 // GAMESTATES
 pub enum GameState {
     GreetingScreen, // Press enter
     MainMenu,       // Menu start quit settings, etc
-    Playing,        // GameLoop goes
-    Pause,          // Gameloop poused
+    Playing,        // GameLoop goes / pause here
     GameOver,       // Player lost all lifes
     EndScreen,      // Player won and titles are shown
 }
 
 // GLOBAL DATA
 pub struct GameData {
+    // Closing window var
     window_should_close: bool,
+
+    // GameKeys
+    up: KeyboardKey,
+    down: KeyboardKey,
+    left: KeyboardKey,
+    right: KeyboardKey,
+    attack: KeyboardKey,
+    bomb: KeyboardKey,
+    slow: KeyboardKey,
 }
 
 impl GameData {
     pub fn new() -> Self {
         Self {
             window_should_close: false,
+            up: KeyboardKey::KEY_UP,
+            down: KeyboardKey::KEY_DOWN,
+            left: KeyboardKey::KEY_LEFT,
+            right: KeyboardKey::KEY_RIGHT,
+            attack: KeyboardKey::KEY_Z,
+            bomb: KeyboardKey::KEY_X,
+            slow: KeyboardKey::KEY_LEFT_SHIFT,
         }
     }
 
+    // Window
     pub fn window_must_close(&mut self) {
         self.window_should_close = true;
     }
 
     pub fn window_should_close(&self) -> bool {
         self.window_should_close
+    }
+
+    // Keys
+    pub fn key(&self, action: &str) -> KeyboardKey {
+        match action {
+            "up" => self.up,
+            "down" => self.down,
+            "left" => self.left,
+            "right" => self.right,
+            "attack" => self.attack,
+            "bomb" => self.bomb,
+            "slow" => self.slow,
+            _ => panic!(
+                "Action '{}' does not exist! Refer to list of actions in the global.rs file",
+                action
+            ),
+        }
+    }
+
+    // TODO: Implement saving configs into settings.dat
+    pub fn set_key(&mut self, action: &str, new_key: KeyboardKey) {
+        match action {
+            "up" => self.up = new_key,
+            "down" => self.down = new_key,
+            "left" => self.left = new_key,
+            "right" => self.right = new_key,
+            "attack" => self.attack = new_key,
+            "bomb" => self.bomb = new_key,
+            "slow" => self.slow = new_key,
+            _ => panic!("Action '{}' does not exist!", action),
+        }
     }
 }
 

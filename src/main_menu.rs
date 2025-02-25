@@ -65,14 +65,14 @@ impl MainMenu {
 
         match self.menu_state {
             MenuState::Idle => {
-                self.handle_idle_update(rl, delta_time);
+                self.handle_idle_update(rl, gd, delta_time);
             }
             MenuState::Start => {}
             MenuState::StartExtra => {}
             MenuState::StartPractice => {}
             MenuState::Score => {}
             MenuState::Option => {
-                self.handle_option_update(rl, delta_time);
+                self.handle_option_update(rl, gd, delta_time);
             }
             MenuState::Quit => {
                 gd.window_must_close();
@@ -340,7 +340,7 @@ impl MainMenu {
     }
 
     // MAIN
-    fn handle_idle_update(&mut self, rl: &RaylibHandle, delta_time: &f32) {
+    fn handle_idle_update(&mut self, rl: &RaylibHandle, gd: &mut GameData, delta_time: &f32) {
         match self.main_menu_activity {
             MenuActivity::Show => {
                 const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
@@ -380,25 +380,28 @@ impl MainMenu {
 
                 // HANDLE INPUT
                 {
-                    if rl.is_key_pressed(DOWN) {
+                    if rl.is_key_pressed(gd.key("down")) {
                         if self.chosen_index == 5u8 {
                             self.chosen_index = 0u8;
                         } else {
                             self.chosen_index += 1;
                         }
                     }
-                    if rl.is_key_pressed(UP) {
+                    if rl.is_key_pressed(gd.key("up")) {
                         if self.chosen_index == 0u8 {
                             self.chosen_index = 5u8;
                         } else {
                             self.chosen_index -= 1;
                         }
                     }
+                    if rl.is_key_pressed(REJECT) || rl.is_key_pressed(gd.key("bomb")) {
+                        self.chosen_index = 5u8;
+                    }
                 }
 
                 // HANDLE CHOISE
                 {
-                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(ATACK) {
+                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
                         match self.chosen_index {
                             0 => {}
                             1 => {}
@@ -431,7 +434,7 @@ impl MainMenu {
     }
 
     // OPTION
-    fn handle_option_update(&mut self, rl: &RaylibHandle, delta_time: &f32) {
+    fn handle_option_update(&mut self, rl: &RaylibHandle, gd: &mut GameData, delta_time: &f32) {
         let next_menu_state: MenuState;
         match self.option_activity {
             MenuActivity::Show => {
@@ -446,25 +449,28 @@ impl MainMenu {
             MenuActivity::Idle => {
                 // HANDLE INPUT
                 {
-                    if rl.is_key_pressed(DOWN) {
+                    if rl.is_key_pressed(gd.key("down")) {
                         if self.chosen_index == 6u8 {
                             self.chosen_index = 0u8;
                         } else {
                             self.chosen_index += 1;
                         }
                     }
-                    if rl.is_key_pressed(UP) {
+                    if rl.is_key_pressed(gd.key("up")) {
                         if self.chosen_index == 0u8 {
                             self.chosen_index = 6u8;
                         } else {
                             self.chosen_index -= 1;
                         }
                     }
+                    if rl.is_key_pressed(REJECT) || rl.is_key_pressed(gd.key("bomb")) {
+                        self.chosen_index = 6u8;
+                    }
                 }
 
                 // HANDLE CHOISE
                 {
-                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(ATACK) {
+                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
                         match self.chosen_index {
                             0 => {}
                             1 => {}
