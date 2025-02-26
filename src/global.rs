@@ -21,8 +21,9 @@ pub enum GameState {
 
 // GLOBAL DATA
 pub struct GameData {
-    // Closing window var
+    // Window vars
     window_should_close: bool,
+    window_fullscreen: bool,
 
     // GameKeys
     up: KeyboardKey,
@@ -37,7 +38,11 @@ pub struct GameData {
 impl GameData {
     pub fn new() -> Self {
         Self {
+            // Window
             window_should_close: false,
+            window_fullscreen: false,
+
+            // Keys
             up: KeyboardKey::KEY_UP,
             down: KeyboardKey::KEY_DOWN,
             left: KeyboardKey::KEY_LEFT,
@@ -48,16 +53,27 @@ impl GameData {
         }
     }
 
-    // Window
+    /// Window will close on next iteration if true
     pub fn window_must_close(&mut self) {
         self.window_should_close = true;
     }
 
+    /// Returns true if window must close
     pub fn window_should_close(&self) -> bool {
         self.window_should_close
     }
 
-    // Keys
+    /// Toggle Fullscreen using gamedata, returns fullscreen state in written in Data
+    pub fn toggle_fullscreen(&mut self) -> bool {
+        if self.window_fullscreen == true {
+            self.window_fullscreen = false;
+        } else {
+            self.window_fullscreen = true;
+        }
+        self.window_fullscreen
+    }
+
+    /// Keys Data loaded in gamedata. Provide with action: "up", "down", "left", "right", "attack", "bomb", "slow"
     pub fn key(&self, action: &str) -> KeyboardKey {
         match action {
             "up" => self.up,
@@ -75,6 +91,7 @@ impl GameData {
     }
 
     // TODO: Implement saving configs into settings.dat
+    /// Update KeyData from settings
     pub fn set_key(&mut self, action: &str, new_key: KeyboardKey) {
         match action {
             "up" => self.up = new_key,

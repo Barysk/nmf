@@ -225,68 +225,203 @@ impl MainMenu {
                         const FONT_SIZE: f32 = 84f32;
                         const TEXT_GAP: f32 = 72f32;
                         const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
+                        const INACTIVE_WHITE_MAIN: Color = Color::new(255u8, 232u8, 232u8, 232u8);
                         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
-
-                        d.draw_text_ex(
-                            font,
-                            "Health",
-                            Vector2::new(
-                                self.text_pos_x - 40f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 7f32,
-                            ),
-                            FONT_SIZE,
-                            1f32,
-                            if self.chosen_index == 0 {
-                                Color::WHITE
-                            } else {
-                                INACTIVE_WHITE
-                            },
-                        );
-                        d.draw_text_ex(
-                            font,
-                            "Bombs",
-                            Vector2::new(
-                                self.text_pos_x - 40f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 6f32,
-                            ),
-                            FONT_SIZE,
-                            1f32,
-                            if self.chosen_index == 1 {
-                                Color::WHITE
-                            } else {
-                                INACTIVE_WHITE
-                            },
-                        );
-                        d.draw_text_ex(
-                            font,
-                            "Sound",
-                            Vector2::new(
-                                self.text_pos_x - 40f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 5f32,
-                            ),
-                            FONT_SIZE,
-                            1f32,
-                            if self.chosen_index == 2 {
-                                Color::WHITE
-                            } else {
-                                INACTIVE_WHITE
-                            },
-                        );
-                        d.draw_text_ex(
-                            font,
-                            "Mode",
-                            Vector2::new(
-                                self.text_pos_x - 40f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 4f32,
-                            ),
-                            FONT_SIZE,
-                            1f32,
-                            if self.chosen_index == 3 {
-                                Color::WHITE
-                            } else {
-                                INACTIVE_WHITE
-                            },
-                        );
+                        // MODE: Fullscreen Windowed
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Windowed",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 8f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 0 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "Fullscreen",
+                                Vector2::new(
+                                    self.text_pos_x + 340f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 8f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 0 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // FPS
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "FPS",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 7f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 1 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "On",
+                                Vector2::new(
+                                    self.text_pos_x + 340f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 7f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 1 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "Off",
+                                Vector2::new(
+                                    self.text_pos_x + 440f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 7f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 1 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // V-Sync
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "V-Sync",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 2 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "On",
+                                Vector2::new(
+                                    self.text_pos_x + 340f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 2 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "Off",
+                                Vector2::new(
+                                    self.text_pos_x + 440f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 2 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // BGM
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "BGM",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 5f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 3 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "no audio",
+                                Vector2::new(
+                                    self.text_pos_x + 340f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 5f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 3 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // SFX
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "SFX",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 4f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 4 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "no audio",
+                                Vector2::new(
+                                    self.text_pos_x + 340f32,
+                                    TEXT_POSITION as f32 - TEXT_GAP * 4f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 4 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
                         d.draw_text_ex(
                             font,
                             "Configure Keys",
@@ -296,7 +431,7 @@ impl MainMenu {
                             ),
                             FONT_SIZE,
                             1f32,
-                            if self.chosen_index == 4 {
+                            if self.chosen_index == 5 {
                                 Color::WHITE
                             } else {
                                 INACTIVE_WHITE
@@ -311,7 +446,7 @@ impl MainMenu {
                             ),
                             FONT_SIZE,
                             1f32,
-                            if self.chosen_index == 5 {
+                            if self.chosen_index == 6 {
                                 Color::WHITE
                             } else {
                                 INACTIVE_WHITE
@@ -323,7 +458,7 @@ impl MainMenu {
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION as f32 - TEXT_GAP),
                             FONT_SIZE,
                             1f32,
-                            if self.chosen_index == 6 {
+                            if self.chosen_index == 7 {
                                 Color::WHITE
                             } else {
                                 INACTIVE_WHITE
@@ -450,7 +585,7 @@ impl MainMenu {
                 // HANDLE INPUT
                 {
                     if rl.is_key_pressed(gd.key("down")) {
-                        if self.chosen_index == 6u8 {
+                        if self.chosen_index == 7u8 {
                             self.chosen_index = 0u8;
                         } else {
                             self.chosen_index += 1;
@@ -458,13 +593,13 @@ impl MainMenu {
                     }
                     if rl.is_key_pressed(gd.key("up")) {
                         if self.chosen_index == 0u8 {
-                            self.chosen_index = 6u8;
+                            self.chosen_index = 7u8;
                         } else {
                             self.chosen_index -= 1;
                         }
                     }
                     if rl.is_key_pressed(REJECT) || rl.is_key_pressed(gd.key("bomb")) {
-                        self.chosen_index = 6u8;
+                        self.chosen_index = 7u8;
                     }
                 }
 
@@ -472,17 +607,28 @@ impl MainMenu {
                 {
                     if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
                         match self.chosen_index {
-                            0 => {}
-                            1 => {}
-                            2 => {}
-                            3 => {}
+                            0 => {
+                                // Windowed / Fullscreen
+                            }
+                            1 => {
+                                // Draw FPS or not
+                            }
+                            2 => {
+                                // V-Sync
+                            }
+                            3 => {
+                                // BGM
+                            }
                             4 => {
-                                // TODO: Ask which button for which action.
+                                // SFX
                             }
                             5 => {
-                                //RESET
+                                // Configure Keys
                             }
                             6 => {
+                                // Reset
+                            }
+                            7 => {
                                 // Consider adding a next state variable if more tree menus will be done
                                 self.option_activity = MenuActivity::Hide;
                             }
