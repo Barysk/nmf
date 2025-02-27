@@ -58,29 +58,12 @@ fn main() {
             // include upd + draw to each state since they have different logic
             // and drawing tasks
             GameState::GreetingScreen => {
-                manage_greet(
-                    &thread,
-                    &mut rl,
-                    &mut greet_screen,
-                    &delta_time,
-                    &font,
-                    &mut game_state,
-                    &mut cam,
-                    &mut render_target,
-                );
+                greet_screen.update(&mut rl, &delta_time, &mut cam, &mut game_state);
+                greet_screen.draw(&thread, &mut rl, &font, &cam, &mut render_target);
             }
             GameState::MainMenu => {
-                manage_main_menu(
-                    &thread,
-                    &mut rl,
-                    &mut gd,
-                    &mut main_menu,
-                    &delta_time,
-                    &font,
-                    &mut game_state,
-                    &mut cam,
-                    &mut render_target,
-                );
+                main_menu.update(&mut rl, &mut gd, &delta_time, &mut cam, &mut game_state);
+                main_menu.draw(&thread, &mut rl, &font, &cam, &mut render_target);
             }
             GameState::Playing => {
                 playing();
@@ -95,70 +78,67 @@ fn main() {
     }
 }
 
-/// Handle Greeting Screen State
-/// When enter is pressed proceed to main menu and load saves
-/// TODO: Remake into loading screen
-/// FIXME: Too many arguments
-fn manage_greet(
-    thread: &RaylibThread,
-    rl: &mut RaylibHandle,
-    greet_screen: &mut GreetScreen,
-    delta_time: &f32,
-    font: &Font,
-    game_state: &mut GameState,
-    cam: &mut Camera3D,
-    render_target: &mut RenderTexture2D,
-) {
-    greet_screen.update(rl, delta_time, cam, game_state);
-    greet_screen.draw(thread, rl, font, cam, render_target);
-}
+// /// Handle Greeting Screen State
+// /// When enter is pressed proceed to main menu and load saves
+// /// TODO: Remake into loading screen
+// /// FIXME: Too many arguments
+// fn manage_greet(
+//     thread: &RaylibThread,
+//     rl: &mut RaylibHandle,
+//     greet_screen: &mut GreetScreen,
+//     delta_time: &f32,
+//     font: &Font,
+//     game_state: &mut GameState,
+//     cam: &mut Camera3D,
+//     render_target: &mut RenderTexture2D,
+// ) {
 
-/// Handle Main Menu State.
-/// FIXME: Too many arguments, consider refactoring:
-/// ```norun
-/// struct MainMenuContext<'a> {
-///     thread: &'a RaylibThread,
-///     rl: &'a mut RaylibHandle,
-///     gd: &'a mut GameData,
-///     assets: &'a mut AssetManager,
-///     sound_manager: &'a mut SoundManager,
-///     player: &'a mut Player,
-///     camera: &'a mut Camera2D,
-///     render_target: &'a mut RenderTexture2D,
-/// }
-///
-/// fn manage_main_menu(context: &mut MainMenuContext) {
-///     let rl = &mut context.rl;
-///     let gd = &mut context.gd;
-///     // Use other fields similarly
-/// }
-///
-/// let mut context = MainMenuContext {
-///     thread,
-///     rl,
-///     gd,
-///     assets,
-///     sound_manager,
-///     player,
-///     camera,
-///     render_target,
-/// };
-/// manage_main_menu(&mut context);
-/// ```
-fn manage_main_menu(
-    thread: &RaylibThread,
-    rl: &mut RaylibHandle,
-    gd: &mut GameData,
-    main_menu: &mut MainMenu,
-    delta_time: &f32,
-    font: &Font,
-    game_state: &mut GameState,
-    cam: &mut Camera3D,
-    render_target: &mut RenderTexture2D,
-) {
-    main_menu.update(rl, gd, delta_time, cam, game_state);
-    main_menu.draw(thread, rl, font, cam, render_target);
-}
+// }
+
+// /// Handle Main Menu State.
+// /// FIXME: Too many arguments, consider refactoring:
+// /// ```norun
+// /// struct MainMenuContext<'a> {
+// ///     thread: &'a RaylibThread,
+// ///     rl: &'a mut RaylibHandle,
+// ///     gd: &'a mut GameData,
+// ///     assets: &'a mut AssetManager,
+// ///     sound_manager: &'a mut SoundManager,
+// ///     player: &'a mut Player,
+// ///     camera: &'a mut Camera2D,
+// ///     render_target: &'a mut RenderTexture2D,
+// /// }
+// ///
+// /// fn manage_main_menu(context: &mut MainMenuContext) {
+// ///     let rl = &mut context.rl;
+// ///     let gd = &mut context.gd;
+// ///     // Use other fields similarly
+// /// }
+// ///
+// /// let mut context = MainMenuContext {
+// ///     thread,
+// ///     rl,
+// ///     gd,
+// ///     assets,
+// ///     sound_manager,
+// ///     player,
+// ///     camera,
+// ///     render_target,
+// /// };
+// /// manage_main_menu(&mut context);
+// /// ```
+// fn manage_main_menu(
+//     thread: &RaylibThread,
+//     rl: &mut RaylibHandle,
+//     gd: &mut GameData,
+//     main_menu: &mut MainMenu,
+//     delta_time: &f32,
+//     font: &Font,
+//     game_state: &mut GameState,
+//     cam: &mut Camera3D,
+//     render_target: &mut RenderTexture2D,
+// ) {
+// }
 
 /// Handle Choose Difficulty State
 fn _choose_difficulty() {}

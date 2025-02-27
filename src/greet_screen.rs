@@ -39,7 +39,7 @@ impl GreetScreen {
         thread: &RaylibThread,
         rl: &mut RaylibHandle,
         font: &Font,
-        cam: &mut Camera3D,
+        cam: &Camera3D,
         render_target: &mut RenderTexture2D,
     ) {
         let mut d = rl.begin_drawing(thread);
