@@ -44,12 +44,12 @@ impl GreetScreen {
     ) {
         // DRAW IN VIEWPORT
         {
-            let mut d = d.begin_texture_mode(&thread, render_target);
+            let mut d = d.begin_texture_mode(thread, render_target);
             d.clear_background(Color::DARKGRAY);
             // Example Text
             d.draw_text_ex(
                 font,
-                "VIEWPORT",
+                "Greeting",
                 Vector2::new(12f32, 12f32),
                 22f32,
                 1f32,

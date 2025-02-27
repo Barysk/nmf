@@ -1,7 +1,7 @@
 use raylib::prelude::*;
 
 // CONSTANTS
-pub const MAX_FPS: u32 = 144;
+pub const MAX_FPS: u32 = 60;
 pub const SCREEN_HEIGHT: i32 = 960;
 pub const SCREEN_WIDTH: i32 = 720;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
@@ -69,11 +69,7 @@ impl GameData {
     /* FPS */
     /// Toggles is fps should be drawn
     pub fn fps_should_draw_toggle(&mut self) {
-        if self.should_draw_fps == true {
-            self.should_draw_fps = false;
-        } else {
-            self.should_draw_fps = true;
-        }
+        self.should_draw_fps = !self.should_draw_fps;
     }
 
     /// Returns if fps should be drawn
@@ -82,13 +78,8 @@ impl GameData {
     }
 
     /// Toggle Fullscreen using gamedata, returns fullscreen state in written in Data
-    pub fn toggle_fullscreen(&mut self) -> bool {
-        if self.window_fullscreen == true {
-            self.window_fullscreen = false;
-        } else {
-            self.window_fullscreen = true;
-        }
-        self.window_fullscreen
+    pub fn toggle_fullscreen(&mut self) {
+        self.window_fullscreen = !self.window_fullscreen;
     }
 
     pub fn is_fullscreen(&self) -> bool {
@@ -175,20 +166,19 @@ pub fn draw_on_target(d: &mut RaylibDrawHandle, render_target: &RenderTexture2D)
     );
 }
 
-/// lerp that handles appropriate error, so no infinite interpolation
-pub fn lerp_e(v0: f32, v1: f32, amount: f32, err_size: f32) -> f32 {
+/// lerp that handles appropriate error, so no infinite interpolation, also delta time
+pub fn lerp_e(v0: f32, v1: f32, delta_time: &f32, lerp_speed: f32, err_size: f32) -> f32 {
     if !compare_floats(v0, v1, err_size) {
-        return v0 + amount * (v1 - v0);
-    } else {
-        v0
+        let factor = (lerp_speed * delta_time).min(1f32); // Exponential smoothing
+        return v0 + factor * (v1 - v0);
     }
+    v1
 }
 
 /// compares if floats are almost equal, and returns true if they are
 pub fn compare_floats(v0: f32, v1: f32, err_size: f32) -> bool {
     if (v0 - v1).abs() > err_size {
-        false
-    } else {
-        true
+        return false;
     }
+    true
 }

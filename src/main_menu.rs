@@ -35,8 +35,11 @@ enum MenuState {
 impl MainMenu {
     const ACTIVITY_TIME_MIN: f32 = 3f32;
     const ACTIVITY_TIME_MAX: f32 = 5f32;
-    const TARGET_TEXT_POS: f32 = 72f32;
-    const INITIAL_TEXT_POS: f32 = -384f32;
+    const TARGET_TEXT_POS: f32 = 96f32;
+    const INITIAL_TEXT_POS: f32 = -380f32;
+    const LERP_SPEED: f32 = 24f32;
+    const LERP_SPEED_ACTIVITY: f32 = 2f32;
+    const LERP_ACCEPTABLE_ERR: f32 = 0.8f32;
 
     pub fn new() -> Self {
         Self {
@@ -98,7 +101,7 @@ impl MainMenu {
             // Example Text
             d.draw_text_ex(
                 font,
-                "VIEWPORT",
+                "Menu",
                 Vector2::new(12f32, 12f32),
                 22f32,
                 1f32,
@@ -125,7 +128,7 @@ impl MainMenu {
                             "Start",
                             Vector2::new(
                                 self.text_pos_x - self.text_pos_x_mod * 0.2f32 + 5f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                                TEXT_POSITION - TEXT_GAP * 6f32,
                             ),
                             FONT_SIZE,
                             1f32,
@@ -140,7 +143,7 @@ impl MainMenu {
                             "Start Extra",
                             Vector2::new(
                                 self.text_pos_x - self.text_pos_x_mod * 1.2f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 5f32,
+                                TEXT_POSITION - TEXT_GAP * 5f32,
                             ),
                             FONT_SIZE,
                             1f32,
@@ -155,7 +158,7 @@ impl MainMenu {
                             "Start Practice",
                             Vector2::new(
                                 self.text_pos_x + self.text_pos_x_mod * 0.3f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 4f32,
+                                TEXT_POSITION - TEXT_GAP * 4f32,
                             ),
                             FONT_SIZE,
                             1f32,
@@ -170,7 +173,7 @@ impl MainMenu {
                             "Score",
                             Vector2::new(
                                 self.text_pos_x - self.text_pos_x_mod * 0.4f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 3f32,
+                                TEXT_POSITION - TEXT_GAP * 3f32,
                             ),
                             FONT_SIZE,
                             1f32,
@@ -185,7 +188,7 @@ impl MainMenu {
                             "Option",
                             Vector2::new(
                                 self.text_pos_x + self.text_pos_x_mod * 1.2f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 2f32,
+                                TEXT_POSITION - TEXT_GAP * 2f32,
                             ),
                             FONT_SIZE,
                             1f32,
@@ -198,7 +201,7 @@ impl MainMenu {
                         d.draw_text_ex(
                             font,
                             "Quit",
-                            Vector2::new(self.text_pos_x + 20f32, TEXT_POSITION as f32 - TEXT_GAP),
+                            Vector2::new(self.text_pos_x + 20f32, TEXT_POSITION - TEXT_GAP),
                             FONT_SIZE,
                             1f32,
                             if self.chosen_index == 5 {
@@ -226,7 +229,7 @@ impl MainMenu {
                                 "Windowed",
                                 Vector2::new(
                                     self.text_pos_x - 40f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 8f32,
+                                    TEXT_POSITION - TEXT_GAP * 8f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -240,8 +243,8 @@ impl MainMenu {
                                 font,
                                 "Fullscreen",
                                 Vector2::new(
-                                    self.text_pos_x + 340f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 8f32,
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 8f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -259,7 +262,7 @@ impl MainMenu {
                                 "FPS",
                                 Vector2::new(
                                     self.text_pos_x - 40f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 7f32,
+                                    TEXT_POSITION - TEXT_GAP * 7f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -273,8 +276,8 @@ impl MainMenu {
                                 font,
                                 "On",
                                 Vector2::new(
-                                    self.text_pos_x + 340f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 7f32,
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 7f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -288,8 +291,8 @@ impl MainMenu {
                                 font,
                                 "Off",
                                 Vector2::new(
-                                    self.text_pos_x + 440f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 7f32,
+                                    self.text_pos_x + self.text_pos_x_mod + 100f32,
+                                    TEXT_POSITION - TEXT_GAP * 7f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -307,7 +310,7 @@ impl MainMenu {
                                 "V-Sync",
                                 Vector2::new(
                                     self.text_pos_x - 40f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                                    TEXT_POSITION - TEXT_GAP * 6f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -321,8 +324,8 @@ impl MainMenu {
                                 font,
                                 "On",
                                 Vector2::new(
-                                    self.text_pos_x + 340f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 6f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -336,8 +339,8 @@ impl MainMenu {
                                 font,
                                 "Off",
                                 Vector2::new(
-                                    self.text_pos_x + 440f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 6f32,
+                                    self.text_pos_x + self.text_pos_x_mod + 100f32,
+                                    TEXT_POSITION - TEXT_GAP * 6f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -355,7 +358,7 @@ impl MainMenu {
                                 "BGM",
                                 Vector2::new(
                                     self.text_pos_x - 40f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 5f32,
+                                    TEXT_POSITION - TEXT_GAP * 5f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -369,8 +372,8 @@ impl MainMenu {
                                 font,
                                 "no audio",
                                 Vector2::new(
-                                    self.text_pos_x + 340f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 5f32,
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 5f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -388,7 +391,7 @@ impl MainMenu {
                                 "SFX",
                                 Vector2::new(
                                     self.text_pos_x - 40f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 4f32,
+                                    TEXT_POSITION - TEXT_GAP * 4f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -402,8 +405,8 @@ impl MainMenu {
                                 font,
                                 "no audio",
                                 Vector2::new(
-                                    self.text_pos_x + 340f32,
-                                    TEXT_POSITION as f32 - TEXT_GAP * 4f32,
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 4f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -419,7 +422,7 @@ impl MainMenu {
                             "Configure Keys",
                             Vector2::new(
                                 self.text_pos_x - 40f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 3f32,
+                                TEXT_POSITION - TEXT_GAP * 3f32,
                             ),
                             FONT_SIZE,
                             1f32,
@@ -434,7 +437,7 @@ impl MainMenu {
                             "Reset",
                             Vector2::new(
                                 self.text_pos_x - 40f32,
-                                TEXT_POSITION as f32 - TEXT_GAP * 2f32,
+                                TEXT_POSITION - TEXT_GAP * 2f32,
                             ),
                             FONT_SIZE,
                             1f32,
@@ -447,7 +450,7 @@ impl MainMenu {
                         d.draw_text_ex(
                             font,
                             "Back",
-                            Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION as f32 - TEXT_GAP),
+                            Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP),
                             FONT_SIZE,
                             1f32,
                             if self.chosen_index == 7 {
@@ -470,24 +473,34 @@ impl MainMenu {
     fn handle_idle_update(&mut self, rl: &RaylibHandle, gd: &mut GameData, delta_time: &f32) {
         match self.main_menu_activity {
             MenuActivity::Show => {
-                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
-
                 if self.text_pos_x < Self::TARGET_TEXT_POS {
-                    self.text_pos_x += TEXT_MOVING_SPEED_INIT * delta_time;
+                    self.text_pos_x = lerp_e(
+                        self.text_pos_x,
+                        Self::TARGET_TEXT_POS,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
                 } else {
+                    self.text_pos_x = Self::TARGET_TEXT_POS;
                     self.main_menu_activity = MenuActivity::Idle;
                 }
             }
             MenuActivity::Idle => {
                 const MAX_POS_MOD: f32 = 32f32;
-                const TEXT_MOVING_SPEED: f32 = 128f32;
 
                 // Handle Idle movement
                 {
                     if self.timer_activity > 0f32 {
                         self.timer_activity -= delta_time;
                     } else if self.activity_direction_right {
-                        self.text_pos_x_mod += TEXT_MOVING_SPEED * delta_time;
+                        self.text_pos_x_mod = lerp_e(
+                            self.text_pos_x_mod,
+                            MAX_POS_MOD,
+                            delta_time,
+                            Self::LERP_SPEED_ACTIVITY,
+                            Self::LERP_ACCEPTABLE_ERR,
+                        );
                         if self.text_pos_x_mod >= MAX_POS_MOD {
                             self.activity_direction_right = false;
                             self.timer_activity = rand::random_range(
@@ -495,7 +508,13 @@ impl MainMenu {
                             );
                         }
                     } else if !self.activity_direction_right {
-                        self.text_pos_x_mod -= TEXT_MOVING_SPEED * delta_time;
+                        self.text_pos_x_mod = lerp_e(
+                            self.text_pos_x_mod,
+                            -MAX_POS_MOD,
+                            delta_time,
+                            Self::LERP_SPEED_ACTIVITY,
+                            Self::LERP_ACCEPTABLE_ERR,
+                        );
                         if self.text_pos_x_mod <= -MAX_POS_MOD {
                             self.activity_direction_right = true;
                             self.timer_activity = rand::random_range(
@@ -547,12 +566,17 @@ impl MainMenu {
                 }
             }
             MenuActivity::Hide => {
-                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
-
                 if self.text_pos_x > Self::INITIAL_TEXT_POS {
-                    self.text_pos_x -= TEXT_MOVING_SPEED_INIT * delta_time;
+                    self.text_pos_x = lerp_e(
+                        self.text_pos_x,
+                        Self::INITIAL_TEXT_POS,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
                 } else {
                     self.chosen_index = 0;
+                    self.text_pos_x_mod = 0f32;
                     self.option_activity = MenuActivity::Show;
                     self.menu_state = MenuState::Option;
                 }
@@ -564,15 +588,31 @@ impl MainMenu {
     fn handle_option_update(&mut self, rl: &mut RaylibHandle, gd: &mut GameData, delta_time: &f32) {
         const TEXT_GAP: f32 = 72f32;
         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
+        const MOD_TEXT_POSITION: f32 = 340f32;
+        const LERP_NAVDOT: f32 = 16f32;
 
         match self.option_activity {
             MenuActivity::Show => {
-                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
-
-                // Move text till stop
-                if self.text_pos_x < Self::TARGET_TEXT_POS {
-                    self.text_pos_x += TEXT_MOVING_SPEED_INIT * delta_time;
+                // Move text on the specified positions
+                if self.text_pos_x < Self::TARGET_TEXT_POS
+                    && self.text_pos_x_mod < MOD_TEXT_POSITION
+                {
+                    self.text_pos_x = lerp_e(
+                        self.text_pos_x,
+                        Self::TARGET_TEXT_POS,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
+                    self.text_pos_x_mod = lerp_e(
+                        self.text_pos_x_mod,
+                        MOD_TEXT_POSITION,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
                 } else {
+                    self.text_pos_x = Self::TARGET_TEXT_POS;
                     self.option_activity = MenuActivity::Idle;
                 }
 
@@ -587,8 +627,9 @@ impl MainMenu {
                     self.dot_position.y,
                     (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
                         + (TEXT_GAP * self.chosen_index as f32),
-                    0.2f32,
-                    0.5f32,
+                    delta_time,
+                    LERP_NAVDOT,
+                    Self::LERP_ACCEPTABLE_ERR,
                 );
 
                 // HANDLE INPUT
@@ -656,17 +697,34 @@ impl MainMenu {
                 }
             }
             MenuActivity::Hide => {
-                const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
-
                 // Hiding Texts
-                if self.text_pos_x > Self::INITIAL_TEXT_POS {
-                    self.text_pos_x -= TEXT_MOVING_SPEED_INIT * delta_time;
+                if self.text_pos_x > Self::INITIAL_TEXT_POS && self.text_pos_x_mod > 0f32 {
+                    self.text_pos_x = lerp_e(
+                        self.text_pos_x,
+                        Self::INITIAL_TEXT_POS,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
+                    self.text_pos_x_mod = lerp_e(
+                        self.text_pos_x_mod,
+                        0f32,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
                 } else {
                     self.chosen_index = 4;
                     self.main_menu_activity = MenuActivity::Show;
                     self.menu_state = MenuState::Idle;
+                    {
+                        // resetting those values to reuse them
+                        self.text_pos_x_mod = 32f32;
+                        self.activity_direction_right = false;
+                        self.timer_activity = Self::ACTIVITY_TIME_MIN;
+                    }
                 }
-                
+
                 // Move NAV DOT till on x axis
                 self.dot_position.x = self.text_pos_x - 72f32;
             }
