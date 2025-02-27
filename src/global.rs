@@ -1,7 +1,7 @@
 use raylib::prelude::*;
 
 // CONSTANTS
-pub const MAX_FPS: u32 = 60;
+pub const MAX_FPS: u32 = 144;
 pub const SCREEN_HEIGHT: i32 = 960;
 pub const SCREEN_WIDTH: i32 = 720;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
@@ -42,7 +42,7 @@ impl GameData {
             // Window
             window_should_close: false,
             window_fullscreen: false,
-            should_draw_fps: false,
+            should_draw_fps: true,
 
             // Keys
             up: KeyboardKey::KEY_UP,
@@ -55,6 +55,7 @@ impl GameData {
         }
     }
 
+    /* Window */
     /// Window will close on next iteration if true
     pub fn window_must_close(&mut self) {
         self.window_should_close = true;
@@ -65,6 +66,21 @@ impl GameData {
         self.window_should_close
     }
 
+    /* FPS */
+    /// Toggles is fps should be drawn
+    pub fn fps_should_draw_toggle(&mut self) {
+        if self.should_draw_fps == true {
+            self.should_draw_fps = false;
+        } else {
+            self.should_draw_fps = true;
+        }
+    }
+
+    /// Returns if fps should be drawn
+    pub fn fps_should_draw(&self) -> bool {
+        self.should_draw_fps
+    }
+
     /// Toggle Fullscreen using gamedata, returns fullscreen state in written in Data
     pub fn toggle_fullscreen(&mut self) -> bool {
         if self.window_fullscreen == true {
@@ -72,6 +88,10 @@ impl GameData {
         } else {
             self.window_fullscreen = true;
         }
+        self.window_fullscreen
+    }
+
+    pub fn is_fullscreen(&self) -> bool {
         self.window_fullscreen
     }
 

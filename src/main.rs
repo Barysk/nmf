@@ -53,26 +53,62 @@ fn main() {
         // PRE-UPDATE, GLOBAL KEYBOARD INPUT, ETC. | Probably will not be needed
         let delta_time: f32 = rl.get_frame_time();
 
-        // STATE MANAGING
+        // UPDATE
         match game_state {
             // include upd + draw to each state since they have different logic
             // and drawing tasks
             GameState::GreetingScreen => {
                 greet_screen.update(&mut rl, &delta_time, &mut cam, &mut game_state);
-                greet_screen.draw(&thread, &mut rl, &font, &cam, &mut render_target);
             }
             GameState::MainMenu => {
                 main_menu.update(&mut rl, &mut gd, &delta_time, &mut cam, &mut game_state);
-                main_menu.draw(&thread, &mut rl, &font, &cam, &mut render_target);
             }
             GameState::Playing => {
-                playing();
+                // play
             }
             GameState::GameOver => {
-                game_over();
+                // GameOver
             }
             GameState::EndScreen => {
-                end_screen();
+                // EndScreen
+            }
+        }
+
+        // DRAW out of canvas
+        let mut d = rl.begin_drawing(&thread);
+        d.clear_background(Color::BLACK);
+
+        // Draw FPS if global setting tells so
+        if gd.fps_should_draw() {
+            d.draw_text_ex(
+                &font,
+                format!("{} FPS", d.get_fps()).as_str(),
+                Vector2::new(12f32, 12f32),
+                36f32,
+                1f32,
+                Color::new(255, 165, 0, 191),
+            );
+        }
+
+        // DRAW IN CANVAS
+        // STATE MANAGING
+        match game_state {
+            // include upd + draw to each state since they have different logic
+            // and drawing tasks
+            GameState::GreetingScreen => {
+                greet_screen.draw(&thread, &mut d, &font, &cam, &mut render_target);
+            }
+            GameState::MainMenu => {
+                main_menu.draw(&thread, &mut d, &gd, &font, &cam, &mut render_target);
+            }
+            GameState::Playing => {
+                //playing
+            }
+            GameState::GameOver => {
+                //game_over
+            }
+            GameState::EndScreen => {
+                //end_screen
             }
         }
     }
@@ -139,18 +175,6 @@ fn main() {
 //     render_target: &mut RenderTexture2D,
 // ) {
 // }
-
-/// Handle Choose Difficulty State
-fn _choose_difficulty() {}
-
-/// Handle GamePlay State
-fn playing() {}
-
-/// Handle Game Over State
-fn game_over() {}
-
-/// Handle End Screen State
-fn end_screen() {}
 
 // // DRAW OUT OF VIEWPORT
 // {

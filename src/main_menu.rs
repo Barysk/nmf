@@ -83,23 +83,12 @@ impl MainMenu {
     pub fn draw(
         &self,
         thread: &RaylibThread,
-        rl: &mut RaylibHandle,
+        d: &mut RaylibDrawHandle,
+        gd: &GameData,
         font: &Font,
         cam: &Camera3D,
         render_target: &mut RenderTexture2D,
     ) {
-        let mut d = rl.begin_drawing(thread);
-        d.clear_background(Color::BLACK);
-        // Example Text
-        d.draw_text_ex(
-            font,
-            "WHOLE WINDOW",
-            Vector2::new(12f32, 12f32),
-            22f32,
-            1f32,
-            Color::ORANGE,
-        );
-
         // DRAW IN VIEWPORT
         {
             let mut d = d.begin_texture_mode(thread, render_target);
@@ -225,8 +214,26 @@ impl MainMenu {
                         const FONT_SIZE: f32 = 84f32;
                         const TEXT_GAP: f32 = 72f32;
                         const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
-                        const INACTIVE_WHITE_MAIN: Color = Color::new(255u8, 232u8, 232u8, 232u8);
+                        //const INACTIVE_WHITE_MAIN: Color = Color::new(255u8, 232u8, 232u8, 232u8);
                         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
+                        // d.draw_circle_v(
+                        //     Vector2::new(
+                        //         self.text_pos_x - 72f32,
+                        //         (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                        //             + (TEXT_GAP * self.chosen_index as f32)
+                        //     ),
+                        //     10f32,
+                        //     Color::RED,
+                        // );
+                        d.draw_circle_v(
+                            Vector2::new(
+                                self.text_pos_x - 72f32,
+                                (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                                    + (TEXT_GAP * self.chosen_index as f32)
+                            ),
+                            7f32,
+                            Color::WHITE,
+                        );
                         // MODE: Fullscreen Windowed
                         {
                             d.draw_text_ex(
@@ -238,7 +245,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 0 {
+                                if !gd.is_fullscreen() {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -253,7 +260,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 0 {
+                                if gd.is_fullscreen() {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -286,7 +293,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 1 {
+                                if gd.fps_should_draw() {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -301,7 +308,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 1 {
+                                if !gd.fps_should_draw() {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -471,7 +478,7 @@ impl MainMenu {
                 }
             }
         }
-        draw_on_target(&mut d, render_target);
+        draw_on_target(d, render_target);
     }
 
     // MAIN
@@ -569,8 +576,8 @@ impl MainMenu {
     }
 
     // OPTION
-    fn handle_option_update(&mut self, rl: &RaylibHandle, gd: &mut GameData, delta_time: &f32) {
-        let next_menu_state: MenuState; // TODO: REMOVE IT 
+    fn handle_option_update(&mut self, rl: &mut RaylibHandle, gd: &mut GameData, delta_time: &f32) {
+        let next_menu_state: MenuState; // TODO: REMOVE IT
         match self.option_activity {
             MenuActivity::Show => {
                 const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
@@ -603,15 +610,18 @@ impl MainMenu {
                     }
                 }
 
-                // HANDLE CHOISE
+                // HANDLE INPUT
                 {
-                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
+                    if rl.is_key_pressed(gd.key("left")) || rl.is_key_pressed(gd.key("right")) {
                         match self.chosen_index {
                             0 => {
                                 // Windowed / Fullscreen
+                                gd.toggle_fullscreen();
+                                rl.toggle_borderless_windowed();
                             }
                             1 => {
-                                // Draw FPS or not
+                                // FPS
+                                gd.fps_should_draw_toggle();
                             }
                             2 => {
                                 // V-Sync
@@ -622,6 +632,12 @@ impl MainMenu {
                             4 => {
                                 // SFX
                             }
+                            _ => {}
+                        }
+                    }
+
+                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
+                        match self.chosen_index {
                             5 => {
                                 // Configure Keys
                             }
@@ -632,7 +648,7 @@ impl MainMenu {
                                 // Consider adding a next state variable if more tree menus will be done
                                 self.option_activity = MenuActivity::Hide;
                             }
-                            _ => self.chosen_index = 0,
+                            _ => {}
                         }
                     }
                 }

@@ -37,26 +37,14 @@ impl GreetScreen {
     pub fn draw(
         &self,
         thread: &RaylibThread,
-        rl: &mut RaylibHandle,
+        d: &mut RaylibDrawHandle,
         font: &Font,
         cam: &Camera3D,
         render_target: &mut RenderTexture2D,
     ) {
-        let mut d = rl.begin_drawing(thread);
-        d.clear_background(Color::BLACK);
-        //d.draw_text("WHOLE WINDOW", 12, 12, 20, Color::ORANGE);
-        d.draw_text_ex(
-            font,
-            "WHOLE WINDOW",
-            Vector2::new(12f32, 12f32),
-            22f32,
-            1f32,
-            Color::ORANGE,
-        );
-
         // DRAW IN VIEWPORT
         {
-            let mut d = d.begin_texture_mode(thread, render_target);
+            let mut d = d.begin_texture_mode(&thread, render_target);
             d.clear_background(Color::DARKGRAY);
             // Example Text
             d.draw_text_ex(
@@ -93,6 +81,6 @@ impl GreetScreen {
                 );
             }
         }
-        draw_on_target(&mut d, render_target);
+        draw_on_target(d, render_target);
     }
 }
