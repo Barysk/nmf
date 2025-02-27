@@ -570,7 +570,7 @@ impl MainMenu {
 
     // OPTION
     fn handle_option_update(&mut self, rl: &RaylibHandle, gd: &mut GameData, delta_time: &f32) {
-        let next_menu_state: MenuState;
+        let next_menu_state: MenuState; // TODO: REMOVE IT 
         match self.option_activity {
             MenuActivity::Show => {
                 const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;

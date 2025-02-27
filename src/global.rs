@@ -24,6 +24,7 @@ pub struct GameData {
     // Window vars
     window_should_close: bool,
     window_fullscreen: bool,
+    should_draw_fps: bool,
 
     // GameKeys
     up: KeyboardKey,
@@ -41,6 +42,7 @@ impl GameData {
             // Window
             window_should_close: false,
             window_fullscreen: false,
+            should_draw_fps: false,
 
             // Keys
             up: KeyboardKey::KEY_UP,
