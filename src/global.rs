@@ -174,3 +174,21 @@ pub fn draw_on_target(d: &mut RaylibDrawHandle, render_target: &RenderTexture2D)
         Color::WHITE,
     );
 }
+
+/// lerp that handles appropriate error, so no infinite interpolation
+pub fn lerp_e(v0: f32, v1: f32, amount: f32, err_size: f32) -> f32 {
+    if !compare_floats(v0, v1, err_size) {
+        return v0 + amount * (v1 - v0);
+    } else {
+        v0
+    }
+}
+
+/// compares if floats are almost equal, and returns true if they are
+pub fn compare_floats(v0: f32, v1: f32, err_size: f32) -> bool {
+    if (v0 - v1).abs() > err_size {
+        false
+    } else {
+        true
+    }
+}

@@ -17,7 +17,7 @@ impl GreetScreen {
         &mut self,
         rl: &mut RaylibHandle,
         delta_time: &f32,
-        _cam: &mut Camera3D,
+        cam: &mut Camera3D,
         game_state: &mut GameState,
     ) {
         // MIN WAIT TIME

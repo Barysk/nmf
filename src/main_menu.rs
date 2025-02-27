@@ -13,6 +13,7 @@ pub struct MainMenu {
     chosen_index: u8,
     // Option things
     option_activity: MenuActivity,
+    dot_position: Vector2,
 }
 
 enum MenuActivity {
@@ -49,6 +50,7 @@ impl MainMenu {
             timer_activity: Self::ACTIVITY_TIME_MIN,
             // Option
             option_activity: MenuActivity::Hide,
+            dot_position: Vector2::new(Self::INITIAL_TEXT_POS, 0f32),
         }
     }
 
@@ -216,24 +218,7 @@ impl MainMenu {
                         const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
                         //const INACTIVE_WHITE_MAIN: Color = Color::new(255u8, 232u8, 232u8, 232u8);
                         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
-                        // d.draw_circle_v(
-                        //     Vector2::new(
-                        //         self.text_pos_x - 72f32,
-                        //         (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
-                        //             + (TEXT_GAP * self.chosen_index as f32)
-                        //     ),
-                        //     10f32,
-                        //     Color::RED,
-                        // );
-                        d.draw_circle_v(
-                            Vector2::new(
-                                self.text_pos_x - 72f32,
-                                (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
-                                    + (TEXT_GAP * self.chosen_index as f32)
-                            ),
-                            7f32,
-                            Color::WHITE,
-                        );
+                        d.draw_circle_v(self.dot_position, 8f32, Color::WHITE);
                         // MODE: Fullscreen Windowed
                         {
                             d.draw_text_ex(
@@ -577,18 +562,35 @@ impl MainMenu {
 
     // OPTION
     fn handle_option_update(&mut self, rl: &mut RaylibHandle, gd: &mut GameData, delta_time: &f32) {
-        let next_menu_state: MenuState; // TODO: REMOVE IT
+        const TEXT_GAP: f32 = 72f32;
+        const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
+
         match self.option_activity {
             MenuActivity::Show => {
                 const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
 
+                // Move text till stop
                 if self.text_pos_x < Self::TARGET_TEXT_POS {
                     self.text_pos_x += TEXT_MOVING_SPEED_INIT * delta_time;
                 } else {
                     self.option_activity = MenuActivity::Idle;
                 }
+
+                // Handle appearing of the NAV DOT in right place
+                self.dot_position.x = self.text_pos_x - 72f32;
+                self.dot_position.y = (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                    + (TEXT_GAP * self.chosen_index as f32);
             }
             MenuActivity::Idle => {
+                // Move NAV DOT till on y axis using interpolation_err
+                self.dot_position.y = lerp_e(
+                    self.dot_position.y,
+                    (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                        + (TEXT_GAP * self.chosen_index as f32),
+                    0.2f32,
+                    0.5f32,
+                );
+
                 // HANDLE INPUT
                 {
                     if rl.is_key_pressed(gd.key("down")) {
@@ -656,6 +658,7 @@ impl MainMenu {
             MenuActivity::Hide => {
                 const TEXT_MOVING_SPEED_INIT: f32 = 4096f32;
 
+                // Hiding Texts
                 if self.text_pos_x > Self::INITIAL_TEXT_POS {
                     self.text_pos_x -= TEXT_MOVING_SPEED_INIT * delta_time;
                 } else {
@@ -663,6 +666,9 @@ impl MainMenu {
                     self.main_menu_activity = MenuActivity::Show;
                     self.menu_state = MenuState::Idle;
                 }
+                
+                // Move NAV DOT till on x axis
+                self.dot_position.x = self.text_pos_x - 72f32;
             }
         }
     }
