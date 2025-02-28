@@ -1,7 +1,6 @@
 use raylib::prelude::*;
 
 // CONSTANTS
-pub const MAX_FPS: u32 = 60;
 pub const SCREEN_HEIGHT: i32 = 960;
 pub const SCREEN_WIDTH: i32 = 720;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
@@ -24,7 +23,9 @@ pub struct GameData {
     // Window vars
     window_should_close: bool,
     window_fullscreen: bool,
+    max_fps: u32,
     should_draw_fps: bool,
+    vsync_enabled: bool,
 
     // GameKeys
     up: KeyboardKey,
@@ -42,7 +43,9 @@ impl GameData {
             // Window
             window_should_close: false,
             window_fullscreen: false,
+            max_fps: 60u32,
             should_draw_fps: true,
+            vsync_enabled: false, // By default, there is no VSync
 
             // Keys
             up: KeyboardKey::KEY_UP,
@@ -66,7 +69,26 @@ impl GameData {
         self.window_should_close
     }
 
-    /* FPS */
+    /// Toggle Fullscreen using gamedata, returns fullscreen state in written in Data
+    pub fn toggle_fullscreen(&mut self) {
+        self.window_fullscreen = !self.window_fullscreen;
+    }
+
+    pub fn is_fullscreen(&self) -> bool {
+        self.window_fullscreen
+    }
+
+    /* FPS Cap */
+    pub fn set_max_fps(&mut self, new_max_fps: u32) {
+        self.max_fps = new_max_fps;
+    }
+
+    /// Returns current fps cap
+    pub fn get_max_fps(&self) -> u32 {
+        self.max_fps
+    }
+
+    /* FPS Draw */
     /// Toggles is fps should be drawn
     pub fn fps_should_draw_toggle(&mut self) {
         self.should_draw_fps = !self.should_draw_fps;
@@ -77,13 +99,15 @@ impl GameData {
         self.should_draw_fps
     }
 
-    /// Toggle Fullscreen using gamedata, returns fullscreen state in written in Data
-    pub fn toggle_fullscreen(&mut self) {
-        self.window_fullscreen = !self.window_fullscreen;
+    /* V-Sync */
+    /// Toggle V-Sync
+    pub fn toggle_vsync(&mut self) {
+        self.vsync_enabled = !self.vsync_enabled;
     }
 
-    pub fn is_fullscreen(&self) -> bool {
-        self.window_fullscreen
+    /// Returns true if vsync is enabled
+    pub fn is_vsync_enabled(&self) -> bool {
+        self.vsync_enabled
     }
 
     /// Keys Data loaded in gamedata. Provide with action: "up", "down", "left", "right", "attack", "bomb", "slow"

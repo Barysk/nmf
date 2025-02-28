@@ -38,7 +38,7 @@ impl MainMenu {
     const TARGET_TEXT_POS: f32 = 96f32;
     const INITIAL_TEXT_POS: f32 = -380f32;
     const LERP_SPEED: f32 = 24f32;
-    const LERP_SPEED_ACTIVITY: f32 = 2f32;
+    const LERP_SPEED_ACTIVITY: f32 = 4f32;
     const LERP_ACCEPTABLE_ERR: f32 = 0.8f32;
 
     pub fn new() -> Self {
@@ -229,7 +229,7 @@ impl MainMenu {
                                 "Windowed",
                                 Vector2::new(
                                     self.text_pos_x - 40f32,
-                                    TEXT_POSITION - TEXT_GAP * 8f32,
+                                    TEXT_POSITION - TEXT_GAP * 9f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -244,7 +244,7 @@ impl MainMenu {
                                 "Fullscreen",
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
-                                    TEXT_POSITION - TEXT_GAP * 8f32,
+                                    TEXT_POSITION - TEXT_GAP * 9f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
@@ -255,18 +255,51 @@ impl MainMenu {
                                 },
                             );
                         }
-                        // FPS
+                        // FPS cap
                         {
                             d.draw_text_ex(
                                 font,
-                                "FPS",
+                                "FPS Limit",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 8f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 1 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                format!("{}", gd.get_max_fps()).as_str(),
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 8f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 1 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // Show FPS
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Show FPS",
                                 Vector2::new(
                                     self.text_pos_x - 40f32,
                                     TEXT_POSITION - TEXT_GAP * 7f32,
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 1 {
+                                if self.chosen_index == 2 {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -314,7 +347,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 2 {
+                                if self.chosen_index == 3 {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -329,7 +362,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 2 {
+                                if gd.is_vsync_enabled() {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -344,7 +377,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 2 {
+                                if !gd.is_vsync_enabled() {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -362,7 +395,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 3 {
+                                if self.chosen_index == 4 {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -377,7 +410,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 3 {
+                                if self.chosen_index == 4 {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -395,7 +428,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 4 {
+                                if self.chosen_index == 5 {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -410,7 +443,7 @@ impl MainMenu {
                                 ),
                                 FONT_SIZE,
                                 1f32,
-                                if self.chosen_index == 4 {
+                                if self.chosen_index == 5 {
                                     Color::WHITE
                                 } else {
                                     INACTIVE_WHITE
@@ -420,13 +453,10 @@ impl MainMenu {
                         d.draw_text_ex(
                             font,
                             "Configure Keys",
-                            Vector2::new(
-                                self.text_pos_x - 40f32,
-                                TEXT_POSITION - TEXT_GAP * 3f32,
-                            ),
+                            Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 3f32),
                             FONT_SIZE,
                             1f32,
-                            if self.chosen_index == 5 {
+                            if self.chosen_index == 6 {
                                 Color::WHITE
                             } else {
                                 INACTIVE_WHITE
@@ -435,13 +465,10 @@ impl MainMenu {
                         d.draw_text_ex(
                             font,
                             "Reset",
-                            Vector2::new(
-                                self.text_pos_x - 40f32,
-                                TEXT_POSITION - TEXT_GAP * 2f32,
-                            ),
+                            Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 2f32),
                             FONT_SIZE,
                             1f32,
-                            if self.chosen_index == 6 {
+                            if self.chosen_index == 7 {
                                 Color::WHITE
                             } else {
                                 INACTIVE_WHITE
@@ -453,7 +480,7 @@ impl MainMenu {
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP),
                             FONT_SIZE,
                             1f32,
-                            if self.chosen_index == 7 {
+                            if self.chosen_index == 8 {
                                 Color::WHITE
                             } else {
                                 INACTIVE_WHITE
@@ -618,14 +645,14 @@ impl MainMenu {
 
                 // Handle appearing of the NAV DOT in right place
                 self.dot_position.x = self.text_pos_x - 72f32;
-                self.dot_position.y = (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                self.dot_position.y = (TEXT_POSITION + 40f32) - (TEXT_GAP * 9f32)
                     + (TEXT_GAP * self.chosen_index as f32);
             }
             MenuActivity::Idle => {
                 // Move NAV DOT till on y axis using interpolation_err
                 self.dot_position.y = lerp_e(
                     self.dot_position.y,
-                    (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                    (TEXT_POSITION + 40f32) - (TEXT_GAP * 9f32)
                         + (TEXT_GAP * self.chosen_index as f32),
                     delta_time,
                     LERP_NAVDOT,
@@ -635,7 +662,7 @@ impl MainMenu {
                 // HANDLE INPUT
                 {
                     if rl.is_key_pressed(gd.key("down")) {
-                        if self.chosen_index == 7u8 {
+                        if self.chosen_index == 8u8 {
                             self.chosen_index = 0u8;
                         } else {
                             self.chosen_index += 1;
@@ -643,13 +670,13 @@ impl MainMenu {
                     }
                     if rl.is_key_pressed(gd.key("up")) {
                         if self.chosen_index == 0u8 {
-                            self.chosen_index = 7u8;
+                            self.chosen_index = 8u8;
                         } else {
                             self.chosen_index -= 1;
                         }
                     }
                     if rl.is_key_pressed(REJECT) || rl.is_key_pressed(gd.key("bomb")) {
-                        self.chosen_index = 7u8;
+                        self.chosen_index = 8u8;
                     }
                 }
 
@@ -663,16 +690,38 @@ impl MainMenu {
                                 rl.toggle_borderless_windowed();
                             }
                             1 => {
+                                let current_max_fps = gd.get_max_fps();
+                                if rl.is_key_pressed(gd.key("left")) && current_max_fps > 30u32 {
+                                    gd.set_max_fps(current_max_fps - 12u32);
+                                }
+                                if rl.is_key_pressed(gd.key("right")) && current_max_fps < 480 {
+                                    gd.set_max_fps(current_max_fps + 12u32);
+                                }
+                                rl.set_target_fps(gd.get_max_fps());
+                            }
+                            2 => {
                                 // FPS
                                 gd.fps_should_draw_toggle();
                             }
-                            2 => {
-                                // V-Sync
-                            }
                             3 => {
-                                // BGM
+                                // V-Sync
+                                gd.toggle_vsync();
+                                if gd.is_vsync_enabled() {
+                                    rl.set_window_state(WindowState::set_vsync_hint(
+                                        rl.get_window_state(),
+                                        true,
+                                    ));
+                                } else {
+                                    rl.clear_window_state(WindowState::set_vsync_hint(
+                                        rl.get_window_state(),
+                                        true,
+                                    ));
+                                }
                             }
                             4 => {
+                                // BGM
+                            }
+                            5 => {
                                 // SFX
                             }
                             _ => {}
@@ -681,13 +730,13 @@ impl MainMenu {
 
                     if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
                         match self.chosen_index {
-                            5 => {
+                            6 => {
                                 // Configure Keys
                             }
-                            6 => {
+                            7 => {
                                 // Reset
                             }
-                            7 => {
+                            8 => {
                                 // Consider adding a next state variable if more tree menus will be done
                                 self.option_activity = MenuActivity::Hide;
                             }

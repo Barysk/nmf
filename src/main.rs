@@ -23,7 +23,7 @@ fn main() {
     let mut gd: GameData = GameData::new();
 
     rl.set_window_min_size(240i32, 320i32);
-    rl.set_target_fps(MAX_FPS);
+    rl.set_target_fps(gd.get_max_fps());
 
     // LOAD FONT FROM MEMORY
     let font: Font = rl
@@ -58,7 +58,7 @@ fn main() {
             // include upd + draw to each state since they have different logic
             // and drawing tasks
             GameState::GreetingScreen => {
-                greet_screen.update(&mut rl, &delta_time, &mut cam, &mut game_state);
+                greet_screen.update(&rl, &delta_time, &mut cam, &mut game_state);
             }
             GameState::MainMenu => {
                 main_menu.update(&mut rl, &mut gd, &delta_time, &mut cam, &mut game_state);
@@ -77,18 +77,6 @@ fn main() {
         // DRAW out of canvas
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
-
-        // Draw FPS if global setting tells so
-        if gd.fps_should_draw() {
-            d.draw_text_ex(
-                &font,
-                format!("{} FPS", d.get_fps()).as_str(),
-                Vector2::new(12f32, 12f32),
-                36f32,
-                1f32,
-                Color::new(255, 165, 0, 191),
-            );
-        }
 
         // DRAW IN CANVAS
         // STATE MANAGING
@@ -110,6 +98,27 @@ fn main() {
             GameState::EndScreen => {
                 //end_screen
             }
+        }
+
+        // Draw FPS if global setting tells so
+        if gd.fps_should_draw() {
+            let current_fps: &String = &format!("{} fps", d.get_fps());
+            d.draw_text_ex(
+                &font,
+                current_fps,
+                Vector2::new(3f32, 3f32),
+                32f32,
+                1f32,
+                Color::BLACK,
+            );
+            d.draw_text_ex(
+                &font,
+                current_fps,
+                Vector2::new(2f32, 2f32),
+                32f32,
+                1f32,
+                Color::WHITE,
+            );
         }
     }
 }

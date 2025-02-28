@@ -15,7 +15,7 @@ impl GreetScreen {
 
     pub fn update(
         &mut self,
-        rl: &mut RaylibHandle,
+        rl: &RaylibHandle,
         delta_time: &f32,
         cam: &mut Camera3D,
         game_state: &mut GameState,
