@@ -43,6 +43,12 @@ fn main() {
         .load_render_texture(&thread, SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
         .unwrap();
 
+    // INIT AUDIO DEVICE
+    let audio = RaylibAudio::init_audio_device().unwrap();
+    audio.set_audio_stream_buffer_size_default(4096i32);
+    //Music::set_volume(&mut self, volume);
+    //Sound::set_volume(&mut self, volume);
+
     // INIT GREETING SCREEN
     let mut greet_screen: GreetScreen = GreetScreen::new();
 
