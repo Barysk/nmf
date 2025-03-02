@@ -1,3 +1,4 @@
+use raylib::ffi::SetAudioStreamBufferSizeDefault;
 use raylib::prelude::*;
 
 mod global;
@@ -19,10 +20,17 @@ fn main() {
         .title("Noster: Mare Frigoris")
         .build();
 
+    // Minimum window size
+    rl.set_window_min_size(240i32, 320i32);
+    
+    // Initial window size
+    rl.set_window_size(320, 320);
+    
     // INIT GAME DATA
     let mut gd: GameData = GameData::new();
 
-    rl.set_window_min_size(240i32, 320i32);
+    // Setting max fps
+    // TODO: make a gd.init function, that will do everything needed on init
     rl.set_target_fps(gd.get_max_fps());
 
     // LOAD FONT FROM MEMORY
@@ -45,7 +53,9 @@ fn main() {
 
     // INIT AUDIO DEVICE
     let audio = RaylibAudio::init_audio_device().unwrap();
-    audio.set_audio_stream_buffer_size_default(4096i32);
+    //audio.set_audio_stream_buffer_size_default(4096i32);
+    unsafe { ffi::SetAudioStreamBufferSizeDefault(4096i32); }
+
     //Music::set_volume(&mut self, volume);
     //Sound::set_volume(&mut self, volume);
 

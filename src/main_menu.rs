@@ -403,7 +403,7 @@ impl MainMenu {
                             );
                             d.draw_text_ex(
                                 font,
-                                "no audio",
+                                format!("{}%", gd.get_bgm_volume_prc()).as_str(),
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 5f32,
@@ -436,7 +436,7 @@ impl MainMenu {
                             );
                             d.draw_text_ex(
                                 font,
-                                "no audio",
+                                format!("{}%", gd.get_sfx_volume_prc()).as_str(),
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 4f32,
@@ -720,9 +720,25 @@ impl MainMenu {
                             }
                             4 => {
                                 // BGM
+                                if rl.is_key_pressed(gd.key("left")) {
+                                    let bgm_volume: f32 = gd.get_bgm_volume() - 0.1f32;
+                                    gd.set_bgm_volume(bgm_volume.clamp(0f32, 1f32));
+                                }
+                                if rl.is_key_pressed(gd.key("right")) {
+                                    let bgm_volume: f32 = gd.get_bgm_volume() + 0.1f32;
+                                    gd.set_bgm_volume(bgm_volume.clamp(0f32, 1f32));
+                                }
                             }
                             5 => {
                                 // SFX
+                                if rl.is_key_pressed(gd.key("left")) {
+                                    let sfx_volume: f32 = gd.get_sfx_volume() - 0.1f32;
+                                    gd.set_sfx_volume(sfx_volume.clamp(0f32, 1f32));
+                                }
+                                if rl.is_key_pressed(gd.key("right")) {
+                                    let sfx_volume: f32 = gd.get_sfx_volume() + 0.1f32;
+                                    gd.set_sfx_volume(sfx_volume.clamp(0f32, 1f32));
+                                }
                             }
                             _ => {}
                         }

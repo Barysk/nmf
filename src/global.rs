@@ -26,6 +26,8 @@ pub struct GameData {
     max_fps: u32,
     should_draw_fps: bool,
     vsync_enabled: bool,
+    bgm_volume: f32,
+    sfx_volume: f32,
 
     // GameKeys
     up: KeyboardKey,
@@ -46,6 +48,8 @@ impl GameData {
             max_fps: 60u32,
             should_draw_fps: true,
             vsync_enabled: false, // By default, there is no VSync
+            bgm_volume: 1.0f32,
+            sfx_volume: 1.0f32,
 
             // Keys
             up: KeyboardKey::KEY_UP,
@@ -74,11 +78,13 @@ impl GameData {
         self.window_fullscreen = !self.window_fullscreen;
     }
 
+    /// Returns window_fullscreen, from game data
     pub fn is_fullscreen(&self) -> bool {
         self.window_fullscreen
     }
 
     /* FPS Cap */
+    /// Sets a max frame rate
     pub fn set_max_fps(&mut self, new_max_fps: u32) {
         self.max_fps = new_max_fps;
     }
@@ -109,6 +115,43 @@ impl GameData {
     pub fn is_vsync_enabled(&self) -> bool {
         self.vsync_enabled
     }
+    
+    /* Audio */
+    /// Set background music volume
+    pub fn set_bgm_volume(&mut self, new_volume: f32) {
+        if new_volume < 0f32 || new_volume > 1f32 {
+            panic!("Provided bgm volume {} value is out of bounds [0, 1]", new_volume)
+        }
+        self.bgm_volume = new_volume
+    }
+
+    /// Returns current bgm volume
+    pub fn get_bgm_volume(&self) -> f32 {
+        self.bgm_volume
+    }
+    
+    /// Returns current bgm volume in percents
+    pub fn get_bgm_volume_prc(&self) -> f32 {
+        (self.bgm_volume * 100f32).round()
+    }
+
+    /// Set sound effects volume
+    pub fn set_sfx_volume(&mut self, new_volume: f32) {
+        if new_volume < 0f32 || new_volume > 1f32 {
+            panic!("Provided sfx volume {} value is out of bounds [0, 1]", new_volume)
+        }
+        self.sfx_volume = new_volume
+    }
+
+    /// Returns sfx volume
+    pub fn get_sfx_volume(&self) -> f32 {
+        self.sfx_volume
+    }
+
+    /// Returns sfx volume in percents
+    pub fn get_sfx_volume_prc(&self) -> f32 {
+        (self.sfx_volume * 100f32).round()
+    }
 
     /// Keys Data loaded in gamedata. Provide with action: "up", "down", "left", "right", "attack", "bomb", "slow"
     pub fn key(&self, action: &str) -> KeyboardKey {
@@ -128,6 +171,7 @@ impl GameData {
     }
 
     // TODO: Implement saving configs into settings.dat
+    // FIXME: Make a check, so no important keys go overwritten 
     /// Update KeyData from settings
     pub fn set_key(&mut self, action: &str, new_key: KeyboardKey) {
         match action {
