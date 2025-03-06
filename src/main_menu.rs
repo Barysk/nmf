@@ -452,7 +452,7 @@ impl MainMenu {
                         }
                         d.draw_text_ex(
                             font,
-                            "Configure Keys",
+                            "Configure Keys",   // TODO: 
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 3f32),
                             FONT_SIZE,
                             1f32,
@@ -464,7 +464,7 @@ impl MainMenu {
                         );
                         d.draw_text_ex(
                             font,
-                            "Reset",
+                            "Reset",    // TODO: 
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 2f32),
                             FONT_SIZE,
                             1f32,
@@ -686,18 +686,16 @@ impl MainMenu {
                         match self.chosen_index {
                             0 => {
                                 // Windowed / Fullscreen
-                                gd.toggle_fullscreen();
-                                rl.toggle_borderless_windowed();
+                                gd.toggle_fullscreen(rl);
                             }
                             1 => {
                                 let current_max_fps = gd.get_max_fps();
                                 if rl.is_key_pressed(gd.key("left")) && current_max_fps > 30u32 {
-                                    gd.set_max_fps(current_max_fps - 12u32);
+                                    gd.set_max_fps(rl, current_max_fps - 12u32);
                                 }
                                 if rl.is_key_pressed(gd.key("right")) && current_max_fps < 480 {
-                                    gd.set_max_fps(current_max_fps + 12u32);
+                                    gd.set_max_fps(rl, current_max_fps + 12u32);
                                 }
-                                rl.set_target_fps(gd.get_max_fps());
                             }
                             2 => {
                                 // FPS
@@ -705,23 +703,14 @@ impl MainMenu {
                             }
                             3 => {
                                 // V-Sync
-                                gd.toggle_vsync();
-                                if gd.is_vsync_enabled() {
-                                    rl.set_window_state(WindowState::set_vsync_hint(
-                                        rl.get_window_state(),
-                                        true,
-                                    ));
-                                } else {
-                                    rl.clear_window_state(WindowState::set_vsync_hint(
-                                        rl.get_window_state(),
-                                        true,
-                                    ));
-                                }
+                                gd.toggle_vsync(rl);
                             }
                             4 => {
                                 // BGM
+                                // TODO: Actually Change BGM volume
                                 if rl.is_key_pressed(gd.key("left")) {
                                     let bgm_volume: f32 = gd.get_bgm_volume() - 0.1f32;
+                                    //gd.set_bgm_volume(bgm_audio, bgm_volume.clamp(0f32, 1f32));
                                     gd.set_bgm_volume(bgm_volume.clamp(0f32, 1f32));
                                 }
                                 if rl.is_key_pressed(gd.key("right")) {
@@ -731,6 +720,7 @@ impl MainMenu {
                             }
                             5 => {
                                 // SFX
+                                // TODO: Actually Change SFX colume
                                 if rl.is_key_pressed(gd.key("left")) {
                                     let sfx_volume: f32 = gd.get_sfx_volume() - 0.1f32;
                                     gd.set_sfx_volume(sfx_volume.clamp(0f32, 1f32));
@@ -751,6 +741,7 @@ impl MainMenu {
                             }
                             7 => {
                                 // Reset
+                                gd.reset_options(rl);
                             }
                             8 => {
                                 // Consider adding a next state variable if more tree menus will be done

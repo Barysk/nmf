@@ -5,6 +5,23 @@ pub const SCREEN_HEIGHT: i32 = 960;
 pub const SCREEN_WIDTH: i32 = 720;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
 
+// DEFAULT VALUES
+// window
+const FULL_SCREEN: bool = false;
+const MAX_FPS: u32 = 60u32;
+const SHOULD_DRAW_FPS: bool = true;
+const VSYNC_ENABLED: bool = false;
+const BGM_VOLUME: f32 = 1.0f32;
+const SFX_VOLUME: f32 = 1.0f32;
+// keys
+const UP: KeyboardKey = KeyboardKey::KEY_UP;
+const DOWN: KeyboardKey = KeyboardKey::KEY_DOWN;
+const LEFT: KeyboardKey = KeyboardKey::KEY_LEFT;
+const RIGHT: KeyboardKey = KeyboardKey::KEY_RIGHT;
+const ATTACK: KeyboardKey = KeyboardKey::KEY_Z;
+const BOMB: KeyboardKey = KeyboardKey::KEY_X;
+const SLOW: KeyboardKey = KeyboardKey::KEY_LEFT_SHIFT;
+
 // INPUT KEYS
 pub const ACCEPT: KeyboardKey = KeyboardKey::KEY_ENTER;
 pub const REJECT: KeyboardKey = KeyboardKey::KEY_BACKSPACE;
@@ -22,6 +39,7 @@ pub enum GameState {
 pub struct GameData {
     // Window vars
     window_should_close: bool,
+    // Options
     window_fullscreen: bool,
     max_fps: u32,
     should_draw_fps: bool,
@@ -42,23 +60,24 @@ pub struct GameData {
 impl GameData {
     pub fn new() -> Self {
         Self {
-            // Window
+            // Must not be changed outside window_must_close()
             window_should_close: false,
-            window_fullscreen: false,
-            max_fps: 60u32,
-            should_draw_fps: true,
-            vsync_enabled: false, // By default, there is no VSync
-            bgm_volume: 1.0f32,
-            sfx_volume: 1.0f32,
+            // Window
+            window_fullscreen: FULL_SCREEN,
+            max_fps: MAX_FPS,
+            should_draw_fps: SHOULD_DRAW_FPS,
+            vsync_enabled: VSYNC_ENABLED, // By default, there is no VSync
+            bgm_volume: BGM_VOLUME,
+            sfx_volume: SFX_VOLUME,
 
             // Keys
-            up: KeyboardKey::KEY_UP,
-            down: KeyboardKey::KEY_DOWN,
-            left: KeyboardKey::KEY_LEFT,
-            right: KeyboardKey::KEY_RIGHT,
-            attack: KeyboardKey::KEY_Z,
-            bomb: KeyboardKey::KEY_X,
-            slow: KeyboardKey::KEY_LEFT_SHIFT,
+            up: UP,
+            down: DOWN,
+            left: LEFT,
+            right: RIGHT,
+            attack: ATTACK,
+            bomb: BOMB,
+            slow: SLOW,
         }
     }
 
@@ -74,8 +93,9 @@ impl GameData {
     }
 
     /// Toggle Fullscreen using gamedata, returns fullscreen state in written in Data
-    pub fn toggle_fullscreen(&mut self) {
+    pub fn toggle_fullscreen(&mut self, rl: &mut RaylibHandle) {
         self.window_fullscreen = !self.window_fullscreen;
+        rl.toggle_borderless_windowed();
     }
 
     /// Returns window_fullscreen, from game data
@@ -85,8 +105,9 @@ impl GameData {
 
     /* FPS Cap */
     /// Sets a max frame rate
-    pub fn set_max_fps(&mut self, new_max_fps: u32) {
+    pub fn set_max_fps(&mut self, rl: &mut RaylibHandle, new_max_fps: u32) {
         self.max_fps = new_max_fps;
+        rl.set_target_fps(self.max_fps);
     }
 
     /// Returns current fps cap
@@ -107,8 +128,19 @@ impl GameData {
 
     /* V-Sync */
     /// Toggle V-Sync
-    pub fn toggle_vsync(&mut self) {
+    pub fn toggle_vsync(&mut self, rl: &mut RaylibHandle) {
         self.vsync_enabled = !self.vsync_enabled;
+        if self.is_vsync_enabled() {
+            rl.set_window_state(WindowState::set_vsync_hint(
+                rl.get_window_state(),
+                true,
+            ));
+        } else {
+            rl.clear_window_state(WindowState::set_vsync_hint(
+                rl.get_window_state(),
+                true,
+            ));
+        }
     }
 
     /// Returns true if vsync is enabled
@@ -119,7 +151,7 @@ impl GameData {
     /* Audio */
     /// Set background music volume
     pub fn set_bgm_volume(&mut self, new_volume: f32) {
-        if new_volume < 0f32 || new_volume > 1f32 {
+        if !(0f32..=1f32).contains(&new_volume) {
             panic!("Provided bgm volume {} value is out of bounds [0, 1]", new_volume)
         }
         self.bgm_volume = new_volume
@@ -137,7 +169,7 @@ impl GameData {
 
     /// Set sound effects volume
     pub fn set_sfx_volume(&mut self, new_volume: f32) {
-        if new_volume < 0f32 || new_volume > 1f32 {
+        if !(0f32..=1f32).contains(&new_volume) {
             panic!("Provided sfx volume {} value is out of bounds [0, 1]", new_volume)
         }
         self.sfx_volume = new_volume
@@ -151,6 +183,40 @@ impl GameData {
     /// Returns sfx volume in percents
     pub fn get_sfx_volume_prc(&self) -> f32 {
         (self.sfx_volume * 100f32).round()
+    }
+
+    /// Resets All gamedata.option values
+    pub fn reset_options(&mut self, rl: &mut RaylibHandle) {
+        // FIXME: There must be made a check ex: if fullscreen was true than a toggle must happen
+
+        // window
+        if self.window_fullscreen != FULL_SCREEN {
+            self.toggle_fullscreen(rl);
+        }
+        if self.max_fps != MAX_FPS{
+            self.set_max_fps(rl, MAX_FPS);
+        }
+        if self.should_draw_fps != SHOULD_DRAW_FPS {
+            self.fps_should_draw_toggle();
+        }
+        if self.vsync_enabled != VSYNC_ENABLED {
+            self.toggle_vsync(rl);
+        }
+        if self.bgm_volume != BGM_VOLUME {
+            self.set_bgm_volume(BGM_VOLUME);
+        }
+        if self.sfx_volume != SFX_VOLUME {
+            self.set_sfx_volume(SFX_VOLUME);
+        }
+
+        // keys
+        self.up = UP;
+        self.down = DOWN;
+        self.left = LEFT;
+        self.right = RIGHT;
+        self.attack = ATTACK;
+        self.bomb = BOMB;
+        self.slow = SLOW;
     }
 
     /// Keys Data loaded in gamedata. Provide with action: "up", "down", "left", "right", "attack", "bomb", "slow"
