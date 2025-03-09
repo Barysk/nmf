@@ -1,4 +1,5 @@
 use raylib::prelude::*;
+use std::fs;
 
 // CONSTANTS
 pub const SCREEN_HEIGHT: i32 = 960;
@@ -96,6 +97,7 @@ impl GameData {
     pub fn toggle_fullscreen(&mut self, rl: &mut RaylibHandle) {
         self.window_fullscreen = !self.window_fullscreen;
         rl.toggle_borderless_windowed();
+        self.save_config();
     }
 
     /// Returns window_fullscreen, from game data
@@ -131,15 +133,9 @@ impl GameData {
     pub fn toggle_vsync(&mut self, rl: &mut RaylibHandle) {
         self.vsync_enabled = !self.vsync_enabled;
         if self.is_vsync_enabled() {
-            rl.set_window_state(WindowState::set_vsync_hint(
-                rl.get_window_state(),
-                true,
-            ));
+            rl.set_window_state(WindowState::set_vsync_hint(rl.get_window_state(), true));
         } else {
-            rl.clear_window_state(WindowState::set_vsync_hint(
-                rl.get_window_state(),
-                true,
-            ));
+            rl.clear_window_state(WindowState::set_vsync_hint(rl.get_window_state(), true));
         }
     }
 
@@ -147,12 +143,15 @@ impl GameData {
     pub fn is_vsync_enabled(&self) -> bool {
         self.vsync_enabled
     }
-    
+
     /* Audio */
     /// Set background music volume
     pub fn set_bgm_volume(&mut self, new_volume: f32) {
         if !(0f32..=1f32).contains(&new_volume) {
-            panic!("Provided bgm volume {} value is out of bounds [0, 1]", new_volume)
+            panic!(
+                "Provided bgm volume {} value is out of bounds [0, 1]",
+                new_volume
+            )
         }
         self.bgm_volume = new_volume
     }
@@ -161,7 +160,7 @@ impl GameData {
     pub fn get_bgm_volume(&self) -> f32 {
         self.bgm_volume
     }
-    
+
     /// Returns current bgm volume in percents
     pub fn get_bgm_volume_prc(&self) -> f32 {
         (self.bgm_volume * 100f32).round()
@@ -170,7 +169,10 @@ impl GameData {
     /// Set sound effects volume
     pub fn set_sfx_volume(&mut self, new_volume: f32) {
         if !(0f32..=1f32).contains(&new_volume) {
-            panic!("Provided sfx volume {} value is out of bounds [0, 1]", new_volume)
+            panic!(
+                "Provided sfx volume {} value is out of bounds [0, 1]",
+                new_volume
+            )
         }
         self.sfx_volume = new_volume
     }
@@ -187,13 +189,11 @@ impl GameData {
 
     /// Resets All gamedata.option values
     pub fn reset_options(&mut self, rl: &mut RaylibHandle) {
-        // FIXME: There must be made a check ex: if fullscreen was true than a toggle must happen
-
         // window
         if self.window_fullscreen != FULL_SCREEN {
             self.toggle_fullscreen(rl);
         }
-        if self.max_fps != MAX_FPS{
+        if self.max_fps != MAX_FPS {
             self.set_max_fps(rl, MAX_FPS);
         }
         if self.should_draw_fps != SHOULD_DRAW_FPS {
@@ -237,7 +237,7 @@ impl GameData {
     }
 
     // TODO: Implement saving configs into settings.dat
-    // FIXME: Make a check, so no important keys go overwritten 
+    // FIXME: Make a check, so no important keys go overwritten
     /// Update KeyData from settings
     pub fn set_key(&mut self, action: &str, new_key: KeyboardKey) {
         match action {
@@ -250,6 +250,47 @@ impl GameData {
             "slow" => self.slow = new_key,
             _ => panic!("Action '{}' does not exist!", action),
         }
+    }
+
+    pub fn save_config(&self) {
+        let option_data: String = format!(
+            "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
+            self.window_fullscreen,
+            self.max_fps,
+            self.should_draw_fps,
+            self.vsync_enabled,
+            self.bgm_volume,
+            self.sfx_volume,
+            self.up as u32,
+            self.down as u32,
+            self.left as u32,
+            self.right as u32,
+            self.attack as u32,
+            self.bomb as u32,
+            self.slow as u32
+        );
+        fs::write("options.dat", option_data).ok();
+    }
+
+    pub fn load_config(&mut self) {
+        let option_data: String = fs::read_to_string("options.dat").unwrap();
+        let mut lines = option_data.lines();
+        // Window
+        self.window_fullscreen = lines.next().unwrap().parse().unwrap();
+        self.max_fps = lines.next().unwrap().parse().unwrap();
+        self.should_draw_fps = lines.next().unwrap().parse().unwrap();
+        self.vsync_enabled = lines.next().unwrap().parse().unwrap(); // By default, there is no VSync
+        self.bgm_volume = lines.next().unwrap().parse().unwrap();
+        self.sfx_volume = lines.next().unwrap().parse().unwrap();
+
+        // Keys
+        //self.up = lines.next().unwrap().parse::<u32>().unwrap().into();
+        // self.down = lines.next().unwrap().parse().unwrap();
+        // self.left = lines.next().unwrap().parse().unwrap();
+        // self.right = lines.next().unwrap().parse().unwrap();
+        // self.attack = lines.next().unwrap().parse().unwrap();
+        // self.bomb = lines.next().unwrap().parse().unwrap();
+        // self.slow = lines.next().unwrap().parse().unwrap();
     }
 }
 

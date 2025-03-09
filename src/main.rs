@@ -21,10 +21,10 @@ fn main() {
 
     // Minimum window size
     rl.set_window_min_size(240i32, 320i32);
-    
+
     // Initial window size
     rl.set_window_size(320, 320);
-    
+
     // INIT GAME DATA
     let mut gd: GameData = GameData::new();
 
@@ -53,7 +53,9 @@ fn main() {
     // INIT AUDIO DEVICE
     let audio = RaylibAudio::init_audio_device().unwrap();
     //audio.set_audio_stream_buffer_size_default(4096i32);
-    unsafe { ffi::SetAudioStreamBufferSizeDefault(4096i32); }
+    unsafe {
+        ffi::SetAudioStreamBufferSizeDefault(4096i32);
+    }
 
     //Music::set_volume(&mut self, volume);
     //Sound::set_volume(&mut self, volume);
