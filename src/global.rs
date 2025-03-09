@@ -5,6 +5,7 @@ use std::fs;
 pub const SCREEN_HEIGHT: i32 = 960;
 pub const SCREEN_WIDTH: i32 = 720;
 pub const MAIN_FONT: &[u8; 46020] = include_bytes!("../fonts/Catholicon.ttf");
+const OPTIONS_FILE_PATH: &str = "options.dat";
 
 // DEFAULT VALUES
 // window
@@ -269,11 +270,12 @@ impl GameData {
             self.bomb as u32,
             self.slow as u32
         );
-        fs::write("options.dat", option_data).ok();
+        fs::write(OPTIONS_FILE_PATH, option_data.as_bytes()).ok();
     }
 
+    // FIXME: All loaded settings must apply
     pub fn load_config(&mut self) {
-        let option_data: String = fs::read_to_string("options.dat").unwrap();
+        let option_data: String = fs::read_to_string(OPTIONS_FILE_PATH).unwrap();
         let mut lines = option_data.lines();
         // Window
         self.window_fullscreen = lines.next().unwrap().parse().unwrap();
@@ -284,13 +286,13 @@ impl GameData {
         self.sfx_volume = lines.next().unwrap().parse().unwrap();
 
         // Keys
-        //self.up = lines.next().unwrap().parse::<u32>().unwrap().into();
-        // self.down = lines.next().unwrap().parse().unwrap();
-        // self.left = lines.next().unwrap().parse().unwrap();
-        // self.right = lines.next().unwrap().parse().unwrap();
-        // self.attack = lines.next().unwrap().parse().unwrap();
-        // self.bomb = lines.next().unwrap().parse().unwrap();
-        // self.slow = lines.next().unwrap().parse().unwrap();
+        self.up = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
+        self.down = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
+        self.left = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
+        self.right = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
+        self.attack = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
+        self.bomb = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
+        self.slow = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
     }
 }
 

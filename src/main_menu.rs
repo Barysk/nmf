@@ -452,7 +452,7 @@ impl MainMenu {
                         }
                         d.draw_text_ex(
                             font,
-                            "Configure Keys",   // TODO: 
+                            "Configure Keys", // TODO:
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 3f32),
                             FONT_SIZE,
                             1f32,
@@ -464,7 +464,7 @@ impl MainMenu {
                         );
                         d.draw_text_ex(
                             font,
-                            "Reset",    // TODO: 
+                            "Reset", // TODO:
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 2f32),
                             FONT_SIZE,
                             1f32,
