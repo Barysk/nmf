@@ -24,6 +24,7 @@ fn main() {
 
     // Initial window size
     rl.set_window_size(320, 320);
+    rl.set_window_position(rl.get_screen_width()/2 - 160, rl.get_screen_height()/2 - 160);
 
     // INIT GAME DATA
     let mut gd: GameData = GameData::new();
@@ -119,6 +120,7 @@ fn main() {
         }
 
         // Draw FPS if global setting tells so
+        //d.draw_fps(0, 30);
         if gd.fps_should_draw() {
             let current_fps: &String = &format!("{} fps", d.get_fps());
             d.draw_text_ex(

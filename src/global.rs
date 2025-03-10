@@ -223,6 +223,8 @@ impl GameData {
         self.attack = ATTACK;
         self.bomb = BOMB;
         self.slow = SLOW;
+        
+        rl.set_window_size(320, 320);
 
         self.save_config();
     }
@@ -288,6 +290,7 @@ impl GameData {
         }
         let option_data: String = fs::read_to_string(OPTIONS_FILE_PATH).unwrap();
         let mut lines = option_data.lines();
+
         // Window
         self.window_fullscreen = lines.next().unwrap().parse().unwrap();
         self.max_fps = lines.next().unwrap().parse().unwrap();
@@ -295,6 +298,26 @@ impl GameData {
         self.vsync_enabled = lines.next().unwrap().parse().unwrap(); // By default, there is no VSync
         self.bgm_volume = lines.next().unwrap().parse().unwrap();
         self.sfx_volume = lines.next().unwrap().parse().unwrap();
+
+        // Applying settings
+        if self.window_fullscreen != FULL_SCREEN {
+            rl.toggle_borderless_windowed();
+        }
+        if self.max_fps != MAX_FPS {
+            self.set_max_fps(rl, self.max_fps);
+        }
+        if self.should_draw_fps != SHOULD_DRAW_FPS {
+            self.should_draw_fps = false;
+        }
+        if self.vsync_enabled != VSYNC_ENABLED {
+            rl.set_window_state(WindowState::set_vsync_hint(rl.get_window_state(), true));
+        }
+        if self.bgm_volume != BGM_VOLUME {
+            self.set_bgm_volume(self.bgm_volume);
+        }
+        if self.sfx_volume != SFX_VOLUME {
+            self.set_sfx_volume(self.sfx_volume);
+        }
 
         // Keys
         self.up = key_from_i32(lines.next().unwrap().parse().unwrap()).unwrap();
