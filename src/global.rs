@@ -111,6 +111,7 @@ impl GameData {
     pub fn set_max_fps(&mut self, rl: &mut RaylibHandle, new_max_fps: u32) {
         self.max_fps = new_max_fps;
         rl.set_target_fps(self.max_fps);
+        self.save_config();
     }
 
     /// Returns current fps cap
@@ -122,6 +123,7 @@ impl GameData {
     /// Toggles is fps should be drawn
     pub fn fps_should_draw_toggle(&mut self) {
         self.should_draw_fps = !self.should_draw_fps;
+        self.save_config();
     }
 
     /// Returns if fps should be drawn
@@ -138,6 +140,7 @@ impl GameData {
         } else {
             rl.clear_window_state(WindowState::set_vsync_hint(rl.get_window_state(), true));
         }
+        self.save_config();
     }
 
     /// Returns true if vsync is enabled
@@ -154,6 +157,7 @@ impl GameData {
                 new_volume
             )
         }
+        self.save_config();
         self.bgm_volume = new_volume
     }
 
@@ -175,6 +179,7 @@ impl GameData {
                 new_volume
             )
         }
+        self.save_config();
         self.sfx_volume = new_volume
     }
 
@@ -218,6 +223,8 @@ impl GameData {
         self.attack = ATTACK;
         self.bomb = BOMB;
         self.slow = SLOW;
+
+        self.save_config();
     }
 
     /// Keys Data loaded in gamedata. Provide with action: "up", "down", "left", "right", "attack", "bomb", "slow"
@@ -273,8 +280,12 @@ impl GameData {
         fs::write(OPTIONS_FILE_PATH, option_data.as_bytes()).ok();
     }
 
-    // FIXME: All loaded settings must apply
-    pub fn load_config(&mut self) {
+    // FIXME: All loaded settings must apply, same as in reset
+    pub fn load_config(&mut self, rl: &mut RaylibHandle) {
+        if !fs::exists(OPTIONS_FILE_PATH).unwrap() {
+            println!("{} didn't existed so it is being created, with defaults", OPTIONS_FILE_PATH);
+            self.reset_options(rl);
+        }
         let option_data: String = fs::read_to_string(OPTIONS_FILE_PATH).unwrap();
         let mut lines = option_data.lines();
         // Window

@@ -27,6 +27,7 @@ fn main() {
 
     // INIT GAME DATA
     let mut gd: GameData = GameData::new();
+    gd.load_config(&mut rl);
 
     // Setting max fps
     // TODO: make a gd.init function, that will do everything needed on init
