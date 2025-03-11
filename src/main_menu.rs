@@ -5,16 +5,17 @@ use crate::global::*;
 pub struct MainMenu {
     menu_state: MenuState,
     next_menu_state: MenuState,
+    current_activity: MenuActivity,
     // Main menu things
-    main_menu_activity: MenuActivity,
     activity_direction_right: bool,
     text_pos_x: f32,
     text_pos_x_mod: f32,
     timer_activity: f32,
     chosen_index: u8,
     // Option things
-    option_activity: MenuActivity,
     dot_position: Vector2,
+    // KBD Option Settings
+    // ...
 }
 
 enum MenuActivity {
@@ -48,15 +49,14 @@ impl MainMenu {
         Self {
             menu_state: MenuState::Idle,
             next_menu_state: MenuState::Idle,
+            current_activity: MenuActivity::Show,
             // Idle
-            main_menu_activity: MenuActivity::Show,
             activity_direction_right: false,
             chosen_index: 0u8,
             text_pos_x: Self::INITIAL_TEXT_POS,
             text_pos_x_mod: 32f32,
             timer_activity: Self::ACTIVITY_TIME_MIN,
             // Option
-            option_activity: MenuActivity::Hide,
             dot_position: Vector2::new(Self::INITIAL_TEXT_POS, 0f32),
         }
     }
@@ -85,6 +85,7 @@ impl MainMenu {
             }
             MenuState::OptionKBD => {
                 // TODO: Update OptionKBD
+                self.handle_option_kbd_update(rl, gd, delta_time);
             }
             MenuState::Quit => {
                 gd.window_must_close();
@@ -755,7 +756,7 @@ impl MainMenu {
 
     // MAIN
     fn handle_idle_update(&mut self, rl: &RaylibHandle, gd: &mut GameData, delta_time: &f32) {
-        match self.main_menu_activity {
+        match self.current_activity {
             MenuActivity::Show => {
                 if self.text_pos_x < Self::TARGET_TEXT_POS {
                     self.text_pos_x = lerp_e(
@@ -767,7 +768,7 @@ impl MainMenu {
                     );
                 } else {
                     self.text_pos_x = Self::TARGET_TEXT_POS;
-                    self.main_menu_activity = MenuActivity::Idle;
+                    self.current_activity = MenuActivity::Idle;
                 }
             }
             MenuActivity::Idle => {
@@ -838,7 +839,7 @@ impl MainMenu {
                             2 => {}
                             3 => {}
                             4 => {
-                                self.main_menu_activity = MenuActivity::Hide;
+                                self.current_activity = MenuActivity::Hide;
                                 self.next_menu_state = MenuState::Option;
                             }
                             5 => {
@@ -861,7 +862,7 @@ impl MainMenu {
                 } else {
                     self.chosen_index = 0;
                     self.text_pos_x_mod = 0f32;
-                    self.option_activity = MenuActivity::Show;
+                    self.current_activity = MenuActivity::Show;
                     self.menu_state = self.next_menu_state;
                 }
             }
@@ -875,7 +876,7 @@ impl MainMenu {
         const MOD_TEXT_POSITION: f32 = 340f32;
         const LERP_NAVDOT: f32 = 16f32;
 
-        match self.option_activity {
+        match self.current_activity {
             MenuActivity::Show => {
                 // Move text on the specified positions
                 if self.text_pos_x < Self::TARGET_TEXT_POS
@@ -897,7 +898,7 @@ impl MainMenu {
                     );
                 } else {
                     self.text_pos_x = Self::TARGET_TEXT_POS;
-                    self.option_activity = MenuActivity::Idle;
+                    self.current_activity = MenuActivity::Idle;
                 }
 
                 // Handle appearing of the NAV DOT in right place
@@ -995,13 +996,15 @@ impl MainMenu {
                         match self.chosen_index {
                             6 => {
                                 // Configure Keys
+                                self.current_activity = MenuActivity::Hide;
+                                self.next_menu_state = MenuState::OptionKBD;
                             }
                             7 => {
                                 // Reset
                                 gd.reset_options(rl);
                             }
                             8 => {
-                                self.option_activity = MenuActivity::Hide;
+                                self.current_activity = MenuActivity::Hide;
                                 self.next_menu_state = MenuState::Idle;
                             }
                             _ => {}
@@ -1028,7 +1031,7 @@ impl MainMenu {
                     );
                 } else {
                     self.chosen_index = 4;
-                    self.main_menu_activity = MenuActivity::Show;
+                    self.current_activity = MenuActivity::Show;
                     self.menu_state = self.next_menu_state;
                     {
                         // resetting those values to reuse them
@@ -1044,5 +1047,11 @@ impl MainMenu {
         }
     }
 
-    fn handle_option_kbd_update(&self) {}
+    fn handle_option_kbd_update(
+        &mut self,
+        rl: &mut RaylibHandle,
+        gd: &mut GameData,
+        delta_time: &f32,
+    ) {
+    }
 }
