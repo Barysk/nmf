@@ -24,14 +24,17 @@ fn main() {
 
     // Initial window size
     rl.set_window_size(320, 320);
-    rl.set_window_position(rl.get_screen_width()/2 - 160, rl.get_screen_height()/2 - 160);
+    rl.set_window_position(
+        rl.get_screen_width() / 2 - 160,
+        rl.get_screen_height() / 2 - 160,
+    );
 
     // INIT GAME DATA
     let mut gd: GameData = GameData::new();
     gd.load_config(&mut rl);
+    // TODO: make a gd.init function, that will do everything needed on init
 
     // Setting max fps
-    // TODO: make a gd.init function, that will do everything needed on init
     rl.set_target_fps(gd.get_max_fps());
 
     // LOAD FONT FROM MEMORY

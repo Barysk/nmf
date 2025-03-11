@@ -4,6 +4,7 @@ use crate::global::*;
 
 pub struct MainMenu {
     menu_state: MenuState,
+    next_menu_state: MenuState,
     // Main menu things
     main_menu_activity: MenuActivity,
     activity_direction_right: bool,
@@ -22,6 +23,7 @@ enum MenuActivity {
     Hide,
 }
 
+#[derive(Clone, Copy)]
 enum MenuState {
     Idle,          // Default
     Start,         // 2
@@ -29,6 +31,7 @@ enum MenuState {
     StartPractice, // 3
     Score,         // 5
     Option,        // 1
+    OptionKBD,     // 1.2
     Quit,          // Quit
 }
 
@@ -44,6 +47,7 @@ impl MainMenu {
     pub fn new() -> Self {
         Self {
             menu_state: MenuState::Idle,
+            next_menu_state: MenuState::Idle,
             // Idle
             main_menu_activity: MenuActivity::Show,
             activity_direction_right: false,
@@ -78,6 +82,9 @@ impl MainMenu {
             MenuState::Score => {}
             MenuState::Option => {
                 self.handle_option_update(rl, gd, delta_time);
+            }
+            MenuState::OptionKBD => {
+                // TODO: Update OptionKBD
             }
             MenuState::Quit => {
                 gd.window_must_close();
@@ -219,7 +226,6 @@ impl MainMenu {
                         const FONT_SIZE: f32 = 84f32;
                         const TEXT_GAP: f32 = 72f32;
                         const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
-                        //const INACTIVE_WHITE_MAIN: Color = Color::new(255u8, 232u8, 232u8, 232u8);
                         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
                         d.draw_circle_v(self.dot_position, 8f32, Color::WHITE);
                         // MODE: Fullscreen Windowed
@@ -452,7 +458,7 @@ impl MainMenu {
                         }
                         d.draw_text_ex(
                             font,
-                            "Configure Keys", // TODO:
+                            "Configure Keys", // TODO: Configure Keys entry
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 3f32),
                             FONT_SIZE,
                             1f32,
@@ -464,7 +470,7 @@ impl MainMenu {
                         );
                         d.draw_text_ex(
                             font,
-                            "Reset", // TODO:
+                            "Reset",
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 2f32),
                             FONT_SIZE,
                             1f32,
@@ -481,6 +487,257 @@ impl MainMenu {
                             FONT_SIZE,
                             1f32,
                             if self.chosen_index == 8 {
+                                Color::WHITE
+                            } else {
+                                INACTIVE_WHITE
+                            },
+                        );
+                    }
+                    MenuState::OptionKBD => {
+                        // FIXME: Drawing OptionKBD
+                        const FONT_SIZE: f32 = 84f32;
+                        const TEXT_GAP: f32 = 72f32;
+                        const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
+                        const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
+                        d.draw_circle_v(self.dot_position, 8f32, Color::WHITE);
+                        // UP
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Move up",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 8f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 0 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "BTN",
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 8f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 0 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // Down
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Move down",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 7f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 1 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "BTN",
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 7f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 1 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // Left
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Move left",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 6f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 2 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "BTN",
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 6f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 2 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // Right
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Move right",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 5f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 3 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "BTN",
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 5f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 3 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // Attack
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Attack",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 4f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 4 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "BTN",
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 4f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 4 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // Bomb
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Bomb",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 3f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 5 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "BTN",
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 3f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 5 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        // Slow
+                        {
+                            d.draw_text_ex(
+                                font,
+                                "Slow",
+                                Vector2::new(
+                                    self.text_pos_x - 40f32,
+                                    TEXT_POSITION - TEXT_GAP * 2f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 6 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                            d.draw_text_ex(
+                                font,
+                                "BTN",
+                                Vector2::new(
+                                    self.text_pos_x + self.text_pos_x_mod,
+                                    TEXT_POSITION - TEXT_GAP * 2f32,
+                                ),
+                                FONT_SIZE,
+                                1f32,
+                                if self.chosen_index == 6 {
+                                    Color::WHITE
+                                } else {
+                                    INACTIVE_WHITE
+                                },
+                            );
+                        }
+                        d.draw_text_ex(
+                            font,
+                            "Back",
+                            Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP),
+                            FONT_SIZE,
+                            1f32,
+                            if self.chosen_index == 7 {
                                 Color::WHITE
                             } else {
                                 INACTIVE_WHITE
@@ -581,8 +838,8 @@ impl MainMenu {
                             2 => {}
                             3 => {}
                             4 => {
-                                //TODO: next_menu_state MUST be introduced
                                 self.main_menu_activity = MenuActivity::Hide;
+                                self.next_menu_state = MenuState::Option;
                             }
                             5 => {
                                 self.menu_state = MenuState::Quit;
@@ -605,7 +862,7 @@ impl MainMenu {
                     self.chosen_index = 0;
                     self.text_pos_x_mod = 0f32;
                     self.option_activity = MenuActivity::Show;
-                    self.menu_state = MenuState::Option;
+                    self.menu_state = self.next_menu_state;
                 }
             }
         }
@@ -744,8 +1001,8 @@ impl MainMenu {
                                 gd.reset_options(rl);
                             }
                             8 => {
-                                // Consider adding a next state variable if more tree menus will be done
                                 self.option_activity = MenuActivity::Hide;
+                                self.next_menu_state = MenuState::Idle;
                             }
                             _ => {}
                         }
@@ -772,7 +1029,7 @@ impl MainMenu {
                 } else {
                     self.chosen_index = 4;
                     self.main_menu_activity = MenuActivity::Show;
-                    self.menu_state = MenuState::Idle;
+                    self.menu_state = self.next_menu_state;
                     {
                         // resetting those values to reuse them
                         self.text_pos_x_mod = 32f32;
@@ -786,4 +1043,6 @@ impl MainMenu {
             }
         }
     }
+
+    fn handle_option_kbd_update(&self) {}
 }

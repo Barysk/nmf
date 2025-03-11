@@ -223,7 +223,7 @@ impl GameData {
         self.attack = ATTACK;
         self.bomb = BOMB;
         self.slow = SLOW;
-        
+
         rl.set_window_size(320, 320);
 
         self.save_config();
@@ -246,7 +246,6 @@ impl GameData {
         }
     }
 
-    // TODO: Implement saving configs into settings.dat
     // FIXME: Make a check, so no important keys go overwritten
     /// Update KeyData from settings
     pub fn set_key(&mut self, action: &str, new_key: KeyboardKey) {
@@ -282,10 +281,13 @@ impl GameData {
         fs::write(OPTIONS_FILE_PATH, option_data.as_bytes()).ok();
     }
 
-    // FIXME: All loaded settings must apply, same as in reset
+    // FIXME: All loaded settings must apply, same as in reset 1/2 Keys must have own option screen
     pub fn load_config(&mut self, rl: &mut RaylibHandle) {
         if !fs::exists(OPTIONS_FILE_PATH).unwrap() {
-            println!("{} didn't existed so it is being created, with defaults", OPTIONS_FILE_PATH);
+            println!(
+                "{} didn't existed so it is being created, with defaults",
+                OPTIONS_FILE_PATH
+            );
             self.reset_options(rl);
         }
         let option_data: String = fs::read_to_string(OPTIONS_FILE_PATH).unwrap();
