@@ -262,7 +262,9 @@ impl GameData {
     }
     
     pub fn get_key_as_string(&self, key: KeyboardKey) -> String {
-        let key: String = format!("{:?}", key); // FIXME: Cut the "KEY_" part
+        let mut key: String = format!("{:?}", key);
+        //key = key.split("KEY_").collect(); // ALT
+        key = key.trim_start_matches("KEY_").to_string();
         key
     }
 
