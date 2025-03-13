@@ -260,6 +260,11 @@ impl GameData {
             _ => panic!("Action '{}' does not exist!", action),
         }
     }
+    
+    pub fn get_key_as_string(&self, key: KeyboardKey) -> String {
+        let key: String = format!("{:?}", key); // FIXME: Cut the "KEY_" part
+        key
+    }
 
     pub fn save_config(&self) {
         let option_data: String = format!(

@@ -15,6 +15,7 @@ pub struct MainMenu {
     // Option things
     dot_position: Vector2,
     // KBD Option Settings
+    is_listening: bool,
     // ...
 }
 
@@ -58,6 +59,8 @@ impl MainMenu {
             timer_activity: Self::ACTIVITY_TIME_MIN,
             // Option
             dot_position: Vector2::new(Self::INITIAL_TEXT_POS, 0f32),
+            // Option KDB
+            is_listening: false,
         }
     }
 
@@ -501,8 +504,12 @@ impl MainMenu {
                         const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
                         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
                         d.draw_circle_v(self.dot_position, 8f32, Color::WHITE);
+                        // var used for dynamic key naming
+                        let mut key_str: String;
+
                         // UP
                         {
+                            // drawing
                             d.draw_text_ex(
                                 font,
                                 "Move up",
@@ -518,9 +525,16 @@ impl MainMenu {
                                     INACTIVE_WHITE
                                 },
                             );
+
+                            key_str = gd.get_key_as_string(gd.key("up"));
                             d.draw_text_ex(
                                 font,
-                                "BTN",  // TODO: if listening than write listening
+                                if !self.is_listening {
+                                    &key_str
+                                } else {
+                                    "Listening"
+                                },
+                                // "BTN",  // TODO: if listening than write listening
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 8f32,
@@ -551,9 +565,14 @@ impl MainMenu {
                                     INACTIVE_WHITE
                                 },
                             );
+                            key_str = gd.get_key_as_string(gd.key("down"));
                             d.draw_text_ex(
                                 font,
-                                "BTN",
+                                if !self.is_listening {
+                                    &key_str
+                                } else {
+                                    "Listening"
+                                },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 7f32,
@@ -584,9 +603,14 @@ impl MainMenu {
                                     INACTIVE_WHITE
                                 },
                             );
+                            key_str = gd.get_key_as_string(gd.key("left"));
                             d.draw_text_ex(
                                 font,
-                                "BTN",
+                                if !self.is_listening {
+                                    &key_str
+                                } else {
+                                    "Listening"
+                                },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 6f32,
@@ -617,9 +641,13 @@ impl MainMenu {
                                     INACTIVE_WHITE
                                 },
                             );
-                            d.draw_text_ex(
-                                font,
-                                "BTN",
+                            key_str = gd.get_key_as_string(gd.key("right"));
+                            d.draw_text_ex( font,
+                                if !self.is_listening {
+                                    &key_str
+                                } else {
+                                    "Listening"
+                                },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 5f32,
@@ -650,9 +678,14 @@ impl MainMenu {
                                     INACTIVE_WHITE
                                 },
                             );
+                            key_str = gd.get_key_as_string(gd.key("attack"));
                             d.draw_text_ex(
                                 font,
-                                "BTN",
+                                if !self.is_listening {
+                                    &key_str
+                                } else {
+                                    "Listening"
+                                },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 4f32,
@@ -683,9 +716,14 @@ impl MainMenu {
                                     INACTIVE_WHITE
                                 },
                             );
+                            key_str = gd.get_key_as_string(gd.key("bomb"));
                             d.draw_text_ex(
                                 font,
-                                "BTN",
+                                if !self.is_listening {
+                                    &key_str
+                                } else {
+                                    "Listening"
+                                },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 3f32,
@@ -716,9 +754,14 @@ impl MainMenu {
                                     INACTIVE_WHITE
                                 },
                             );
+                            key_str = gd.get_key_as_string(gd.key("slow"));
                             d.draw_text_ex(
                                 font,
-                                "BTN",
+                                if !self.is_listening {
+                                    &key_str
+                                } else {
+                                    "Listening"
+                                },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 2f32,
@@ -1061,8 +1104,8 @@ impl MainMenu {
         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
         const MOD_TEXT_POSITION: f32 = 340f32;
         const LERP_NAVDOT: f32 = 16f32;
-        
-        match self.current_activity{
+
+        match self.current_activity {
             MenuActivity::Show => {
                 // Move text on the specified positions
                 if self.text_pos_x < Self::TARGET_TEXT_POS
@@ -1091,7 +1134,6 @@ impl MainMenu {
                 self.dot_position.x = self.text_pos_x - 72f32;
                 self.dot_position.y = (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
                     + (TEXT_GAP * self.chosen_index as f32);
- 
             }
             MenuActivity::Idle => {
                 // Move NAV DOT till on y axis using interpolation_err
@@ -1103,7 +1145,7 @@ impl MainMenu {
                     LERP_NAVDOT,
                     Self::LERP_ACCEPTABLE_ERR,
                 );
-   
+
                 // HANDLE INPUT
                 {
                     if rl.is_key_pressed(gd.key("down")) {
@@ -1124,7 +1166,7 @@ impl MainMenu {
                         self.chosen_index = 7u8;
                     }
                 }
-                
+
                 // HANDLE INPUT
                 // TODO: Sets listening to change a button
                 {
