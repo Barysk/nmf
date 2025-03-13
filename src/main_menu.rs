@@ -24,7 +24,7 @@ enum MenuActivity {
     Hide,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 enum MenuState {
     Idle,          // Default
     Start,         // 2
@@ -520,7 +520,7 @@ impl MainMenu {
                             );
                             d.draw_text_ex(
                                 font,
-                                "BTN",
+                                "BTN",  // TODO: if listening than write listening
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 8f32,
@@ -1030,7 +1030,11 @@ impl MainMenu {
                         Self::LERP_ACCEPTABLE_ERR,
                     );
                 } else {
-                    self.chosen_index = 4;
+                    if self.next_menu_state == MenuState::Idle {
+                        self.chosen_index = 4;
+                    } else {
+                        self.chosen_index = 0;
+                    }
                     self.current_activity = MenuActivity::Show;
                     self.menu_state = self.next_menu_state;
                     {
@@ -1053,5 +1057,131 @@ impl MainMenu {
         gd: &mut GameData,
         delta_time: &f32,
     ) {
+        const TEXT_GAP: f32 = 72f32;
+        const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
+        const MOD_TEXT_POSITION: f32 = 340f32;
+        const LERP_NAVDOT: f32 = 16f32;
+        
+        match self.current_activity{
+            MenuActivity::Show => {
+                // Move text on the specified positions
+                if self.text_pos_x < Self::TARGET_TEXT_POS
+                    && self.text_pos_x_mod < MOD_TEXT_POSITION
+                {
+                    self.text_pos_x = lerp_e(
+                        self.text_pos_x,
+                        Self::TARGET_TEXT_POS,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
+                    self.text_pos_x_mod = lerp_e(
+                        self.text_pos_x_mod,
+                        MOD_TEXT_POSITION,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
+                } else {
+                    self.text_pos_x = Self::TARGET_TEXT_POS;
+                    self.current_activity = MenuActivity::Idle;
+                }
+
+                // Handle appearing of the NAV DOT in right place
+                self.dot_position.x = self.text_pos_x - 72f32;
+                self.dot_position.y = (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                    + (TEXT_GAP * self.chosen_index as f32);
+ 
+            }
+            MenuActivity::Idle => {
+                // Move NAV DOT till on y axis using interpolation_err
+                self.dot_position.y = lerp_e(
+                    self.dot_position.y,
+                    (TEXT_POSITION + 40f32) - (TEXT_GAP * 8f32)
+                        + (TEXT_GAP * self.chosen_index as f32),
+                    delta_time,
+                    LERP_NAVDOT,
+                    Self::LERP_ACCEPTABLE_ERR,
+                );
+   
+                // HANDLE INPUT
+                {
+                    if rl.is_key_pressed(gd.key("down")) {
+                        if self.chosen_index == 7u8 {
+                            self.chosen_index = 0u8;
+                        } else {
+                            self.chosen_index += 1;
+                        }
+                    }
+                    if rl.is_key_pressed(gd.key("up")) {
+                        if self.chosen_index == 0u8 {
+                            self.chosen_index = 7u8;
+                        } else {
+                            self.chosen_index -= 1;
+                        }
+                    }
+                    if rl.is_key_pressed(REJECT) || rl.is_key_pressed(gd.key("bomb")) {
+                        self.chosen_index = 7u8;
+                    }
+                }
+                
+                // HANDLE INPUT
+                // TODO: Sets listening to change a button
+                {
+                    if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
+                        match self.chosen_index {
+                            0 => {}
+                            1 => {}
+                            2 => {}
+                            3 => {}
+                            4 => {}
+                            5 => {}
+                            6 => {}
+                            7 => {
+                                self.current_activity = MenuActivity::Hide;
+                                self.next_menu_state = MenuState::Option;
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+            MenuActivity::Hide => {
+                // Hiding Texts
+                if self.text_pos_x > Self::INITIAL_TEXT_POS && self.text_pos_x_mod > 0f32 {
+                    self.text_pos_x = lerp_e(
+                        self.text_pos_x,
+                        Self::INITIAL_TEXT_POS,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
+                    self.text_pos_x_mod = lerp_e(
+                        self.text_pos_x_mod,
+                        0f32,
+                        delta_time,
+                        Self::LERP_SPEED,
+                        Self::LERP_ACCEPTABLE_ERR,
+                    );
+                } else {
+                    if self.next_menu_state == MenuState::Option {
+                        self.chosen_index = 6;
+                    } else {
+                        self.chosen_index = 0;
+                    }
+                    self.current_activity = MenuActivity::Show;
+                    self.menu_state = self.next_menu_state;
+                    {
+                        // resetting those values to reuse them
+                        self.text_pos_x_mod = 32f32;
+                        self.activity_direction_right = false;
+                        self.timer_activity = Self::ACTIVITY_TIME_MIN;
+                    }
+                }
+
+                // Move NAV DOT till on x axis
+                self.dot_position.x = self.text_pos_x - 72f32;
+            }
+        }
     }
 }
