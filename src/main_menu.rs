@@ -1102,7 +1102,7 @@ impl MainMenu {
     ) {
         const TEXT_GAP: f32 = 72f32;
         const TEXT_POSITION: f32 = SCREEN_HEIGHT as f32 - 32f32;
-        const MOD_TEXT_POSITION: f32 = 340f32;
+        const MOD_TEXT_POSITION: f32 = 280f32;
         const LERP_NAVDOT: f32 = 16f32;
 
         match self.current_activity {
