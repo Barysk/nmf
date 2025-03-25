@@ -247,7 +247,7 @@ impl GameData {
     }
 
     // FIXME: Make a check, so no important keys go overwritten
-    /// Update KeyData from settings
+    /// Update KeyData from settings. Provide with action: "up", "down", "left", "right", "attack", "bomb", "slow"
     pub fn set_key(&mut self, action: &str, new_key: KeyboardKey) {
         match action {
             "up" => self.up = new_key,
@@ -259,8 +259,9 @@ impl GameData {
             "slow" => self.slow = new_key,
             _ => panic!("Action '{}' does not exist!", action),
         }
+        self.save_config();
     }
-    
+
     pub fn get_key_as_string(&self, key: KeyboardKey) -> String {
         let mut key: String = format!("{:?}", key);
         //key = key.split("KEY_").collect(); // ALT

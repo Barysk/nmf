@@ -529,10 +529,10 @@ impl MainMenu {
                             key_str = gd.get_key_as_string(gd.key("up"));
                             d.draw_text_ex(
                                 font,
-                                if !self.is_listening {
-                                    &key_str
-                                } else {
+                                if self.is_listening && self.chosen_index == 0 {
                                     "Listening"
+                                } else {
+                                    &key_str
                                 },
                                 // "BTN",  // TODO: if listening than write listening
                                 Vector2::new(
@@ -568,10 +568,10 @@ impl MainMenu {
                             key_str = gd.get_key_as_string(gd.key("down"));
                             d.draw_text_ex(
                                 font,
-                                if !self.is_listening {
-                                    &key_str
-                                } else {
+                                if self.is_listening && self.chosen_index == 1 {
                                     "Listening"
+                                } else {
+                                    &key_str
                                 },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
@@ -606,10 +606,10 @@ impl MainMenu {
                             key_str = gd.get_key_as_string(gd.key("left"));
                             d.draw_text_ex(
                                 font,
-                                if !self.is_listening {
-                                    &key_str
-                                } else {
+                                if self.is_listening && self.chosen_index == 2 {
                                     "Listening"
+                                } else {
+                                    &key_str
                                 },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
@@ -642,11 +642,12 @@ impl MainMenu {
                                 },
                             );
                             key_str = gd.get_key_as_string(gd.key("right"));
-                            d.draw_text_ex( font,
-                                if !self.is_listening {
-                                    &key_str
-                                } else {
+                            d.draw_text_ex(
+                                font,
+                                if self.is_listening && self.chosen_index == 3 {
                                     "Listening"
+                                } else {
+                                    &key_str
                                 },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
@@ -681,10 +682,10 @@ impl MainMenu {
                             key_str = gd.get_key_as_string(gd.key("attack"));
                             d.draw_text_ex(
                                 font,
-                                if !self.is_listening {
-                                    &key_str
-                                } else {
+                                if self.is_listening && self.chosen_index == 4 {
                                     "Listening"
+                                } else {
+                                    &key_str
                                 },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
@@ -719,10 +720,10 @@ impl MainMenu {
                             key_str = gd.get_key_as_string(gd.key("bomb"));
                             d.draw_text_ex(
                                 font,
-                                if !self.is_listening {
-                                    &key_str
-                                } else {
+                                if self.is_listening && self.chosen_index == 5 {
                                     "Listening"
+                                } else {
+                                    &key_str
                                 },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
@@ -757,10 +758,10 @@ impl MainMenu {
                             key_str = gd.get_key_as_string(gd.key("slow"));
                             d.draw_text_ex(
                                 font,
-                                if !self.is_listening {
-                                    &key_str
-                                } else {
+                                if self.is_listening && self.chosen_index == 6 {
                                     "Listening"
+                                } else {
+                                    &key_str
                                 },
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
@@ -1147,7 +1148,7 @@ impl MainMenu {
                 );
 
                 // HANDLE INPUT
-                {
+                if !self.is_listening {
                     if rl.is_key_pressed(gd.key("down")) {
                         if self.chosen_index == 7u8 {
                             self.chosen_index = 0u8;
@@ -1165,25 +1166,58 @@ impl MainMenu {
                     if rl.is_key_pressed(REJECT) || rl.is_key_pressed(gd.key("bomb")) {
                         self.chosen_index = 7u8;
                     }
-                }
-
-                // HANDLE INPUT
-                // TODO: Sets listening to change a button
-                {
+                
+                    // HANDLE INPUT
+                    // TODO: Sets listening to change a button
                     if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
                         match self.chosen_index {
-                            0 => {}
-                            1 => {}
-                            2 => {}
-                            3 => {}
-                            4 => {}
-                            5 => {}
-                            6 => {}
+                            0..=6 => self.is_listening = true,
                             7 => {
                                 self.current_activity = MenuActivity::Hide;
                                 self.next_menu_state = MenuState::Option;
                             }
                             _ => {}
+                        }
+                    }
+                }
+
+                // HANDLE LISTENING
+                if self.is_listening {
+                    let listened_key: Option<KeyboardKey> = rl.get_key_pressed();
+
+                    if listened_key.is_some() {
+                        match self.chosen_index {
+                            0 => {
+                                gd.set_key("up", listened_key.unwrap());
+                                self.is_listening = false
+                            }
+                            1 => {
+                                gd.set_key("down", listened_key.unwrap());
+                                self.is_listening = false
+                            }
+                            2 => {
+                                gd.set_key("left", listened_key.unwrap());
+                                self.is_listening = false
+                            }
+                            3 => {
+                                gd.set_key("right", listened_key.unwrap());
+                                self.is_listening = false
+                            }
+                            4 => {
+                                gd.set_key("attack", listened_key.unwrap());
+                                self.is_listening = false
+                            }
+                            5 => {
+                                gd.set_key("bomb", listened_key.unwrap());
+                                self.is_listening = false
+                            }
+                            6 => {
+                                gd.set_key("slow", listened_key.unwrap());
+                                self.is_listening = false
+                            }
+                            _ => {
+                                self.is_listening = false;
+                            }
                         }
                     }
                 }
