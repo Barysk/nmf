@@ -57,10 +57,7 @@ fn main() {
 
     // INIT AUDIO DEVICE
     let audio = RaylibAudio::init_audio_device().unwrap();
-    //audio.set_audio_stream_buffer_size_default(4096i32);
-    unsafe {
-        ffi::SetAudioStreamBufferSizeDefault(4096i32);
-    }
+    audio.set_audio_stream_buffer_size_default(4096i32);
 
     //Music::set_volume(&mut self, volume);
     //Sound::set_volume(&mut self, volume);
@@ -70,6 +67,9 @@ fn main() {
 
     // INIT MAIN MENU
     let mut main_menu: MainMenu = MainMenu::new();
+
+    // MainMenuMusic
+    let main_menu_bgm: Music = audio.new_music("bgm/nmf_01.wav").unwrap();
 
     while !rl.window_should_close() && !gd.window_should_close() {
         // PRE-UPDATE, GLOBAL KEYBOARD INPUT, ETC. | Probably will not be needed
@@ -83,6 +83,16 @@ fn main() {
                 greet_screen.update(&rl, &delta_time, &mut cam, &mut game_state);
             }
             GameState::MainMenu => {
+                // FIXME refactor music code
+                if !main_menu_bgm.is_stream_playing() {
+                    main_menu_bgm.play_stream();
+                } else if main_menu_bgm.is_stream_playing()
+                    && main_menu_bgm.get_time_played() > 49f32
+                {
+                    main_menu_bgm.seek_stream(1f32);
+                } else {
+                    main_menu_bgm.update_stream();
+                }
                 main_menu.update(&mut rl, &mut gd, &delta_time, &mut cam, &mut game_state);
             }
             GameState::Playing => {
