@@ -56,6 +56,7 @@ fn main() {
         .unwrap();
 
     // INIT AUDIO DEVICE
+    // FIXME: move to global
     let audio = RaylibAudio::init_audio_device().unwrap();
     audio.set_audio_stream_buffer_size_default(4096i32);
 

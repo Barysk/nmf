@@ -1166,7 +1166,7 @@ impl MainMenu {
                     if rl.is_key_pressed(REJECT) || rl.is_key_pressed(gd.key("bomb")) {
                         self.chosen_index = 7u8;
                     }
-                
+
                     // HANDLE INPUT
                     // TODO: Sets listening to change a button
                     if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
@@ -1179,10 +1179,9 @@ impl MainMenu {
                             _ => {}
                         }
                     }
-                }
-
-                // HANDLE LISTENING
-                if self.is_listening {
+                } else {
+                    // HANDLE LISTENING
+                    // If is_listening
                     let listened_key: Option<KeyboardKey> = rl.get_key_pressed();
 
                     if listened_key.is_some() {
