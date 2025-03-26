@@ -3,7 +3,8 @@
 - [x] Main Menu
 - [ ] Opions
     - [x] Genral Options
-    - [ ] Key Board Options
+    - [x] Keyboard Options
+    - [ ] Audio Control
 - [ ] Scores
 - [ ] Game 1/2
     - [ ] HUD
