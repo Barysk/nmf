@@ -46,6 +46,9 @@ pub struct GameData {
     max_fps: u32,
     should_draw_fps: bool,
     vsync_enabled: bool,
+    
+    // Audio
+    audio: RaylibAudio,
     bgm_volume: f32,
     sfx_volume: f32,
 
@@ -69,6 +72,9 @@ impl GameData {
             max_fps: MAX_FPS,
             should_draw_fps: SHOULD_DRAW_FPS,
             vsync_enabled: VSYNC_ENABLED, // By default, there is no VSync
+            
+            // Audio
+            audio: RaylibAudio::init_audio_device().unwrap(),
             bgm_volume: BGM_VOLUME,
             sfx_volume: SFX_VOLUME,
 
@@ -149,6 +155,12 @@ impl GameData {
     }
 
     /* Audio */
+    /// Init audio device
+    pub fn init_audio_device(&mut self) {
+        self.audio.set_audio_stream_buffer_size_default(4096i32);
+    }
+
+
     /// Set background music volume
     pub fn set_bgm_volume(&mut self, new_volume: f32) {
         if !(0f32..=1f32).contains(&new_volume) {

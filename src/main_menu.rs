@@ -87,7 +87,6 @@ impl MainMenu {
                 self.handle_option_update(rl, gd, delta_time);
             }
             MenuState::OptionKBD => {
-                // TODO: Update OptionKBD
                 self.handle_option_kbd_update(rl, gd, delta_time);
             }
             MenuState::Quit => {
@@ -462,7 +461,7 @@ impl MainMenu {
                         }
                         d.draw_text_ex(
                             font,
-                            "Configure Keys", // TODO: Configure Keys entry
+                            "Configure Keys",
                             Vector2::new(self.text_pos_x - 40f32, TEXT_POSITION - TEXT_GAP * 3f32),
                             FONT_SIZE,
                             1f32,
@@ -498,7 +497,7 @@ impl MainMenu {
                         );
                     }
                     MenuState::OptionKBD => {
-                        // FIXME: Drawing OptionKBD
+                        // Drawing OptionKBD
                         const FONT_SIZE: f32 = 84f32;
                         const TEXT_GAP: f32 = 72f32;
                         const INACTIVE_WHITE: Color = Color::new(255u8, 255u8, 255u8, 191u8);
@@ -534,7 +533,6 @@ impl MainMenu {
                                 } else {
                                     &key_str
                                 },
-                                // "BTN",  // TODO: if listening than write listening
                                 Vector2::new(
                                     self.text_pos_x + self.text_pos_x_mod,
                                     TEXT_POSITION - TEXT_GAP * 8f32,
@@ -1168,7 +1166,7 @@ impl MainMenu {
                     }
 
                     // HANDLE INPUT
-                    // TODO: Sets listening to change a button
+                    // Sets listening to a new button
                     if rl.is_key_pressed(ACCEPT) || rl.is_key_pressed(gd.key("attack")) {
                         match self.chosen_index {
                             0..=6 => self.is_listening = true,
